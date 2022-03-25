@@ -1,4 +1,4 @@
-﻿namespace Battleship.Game
+﻿namespace Battleship.Game.Models
 {
     public interface IShip
     {
