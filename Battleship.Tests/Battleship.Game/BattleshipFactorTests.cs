@@ -1,8 +1,3 @@
-using Battleship.Game;
-using Battleship.Game.Models;
-using FluentAssertions;
-using Xunit;
-
 namespace Battleship.Tests
 {
     public class BattleshipFactorTests
