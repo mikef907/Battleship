@@ -1,4 +1,4 @@
-﻿namespace Battleship.Game.Models
+﻿namespace Battleship.Game
 {
     public enum Direction
     {

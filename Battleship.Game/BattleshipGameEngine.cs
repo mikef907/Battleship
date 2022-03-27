@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Battleship.Game
 {
-    public class BattleshipGameEngine
+    public class BattleshipGameEngine : IBattleshipGameEngine
     {
         private readonly ILogger Logger;
 
@@ -12,18 +12,18 @@ namespace Battleship.Game
             Logger = logger;
         }
 
-        public (Result, ShipName?) MarkCoordinate(BattleshipGame game, Coordinate coordinate, Player attacker, Player against)
+        public (Result, ShipName?) MarkCoordinate(BattleshipMatch match, Coordinate coordinate, Player attacker, Player against)
         {
             try
             {
-                if (game.GamePhase != GamePhase.Main) throw new BadGameStateException();
+                if (match.GamePhase != GamePhase.Main) throw new BadGameStateException();
 
-                if (game.State.CheckDuplicateMove(attacker, coordinate))
+                if (match.State.CheckDuplicateMove(attacker, coordinate))
                     throw new InvalidOperationException("Move would be duplicate");
 
-                var results = game.Playerboards[against].CheckForHit(coordinate);
+                var results = match.Playerboards[against].CheckForHit(coordinate);
 
-                game.State.AppendMove(ValueTuple.Create(attacker, coordinate, results.Item1, results.Item2));
+                match.State.AppendMove(ValueTuple.Create(attacker, coordinate, results.Item1, results.Item2));
 
                 return results;
             }
@@ -34,13 +34,13 @@ namespace Battleship.Game
             }
         }
 
-        public Player? CheckGameState(BattleshipGame game)
+        public Player? CheckMatchState(BattleshipMatch match)
         {
             try
             {
-                if (game.Playerboards.Any(_ => _.Value.Ships.All(__ => __.Value.IsSunk)))
+                if (match.Playerboards.Any(_ => _.Value.Ships.All(__ => __.Value.IsSunk)))
                 {
-                    return game.Playerboards.Single(_ => !_.Value.Ships.All(__ => __.Value.IsSunk)).Key;
+                    return match.Playerboards.Single(_ => !_.Value.Ships.All(__ => __.Value.IsSunk)).Key;
                 }
                 return null;
             }
@@ -51,13 +51,13 @@ namespace Battleship.Game
             }
         }
 
-        public bool PlaceShip(BattleshipGame game, Placement placement, IShip ship)
+        public bool PlaceShip(BattleshipMatch match, Placement placement, IShip ship)
         {
             try
             {
-                if (game.GamePhase != GamePhase.Setup) throw new BadGameStateException();
-                
-                var board = game.Playerboards[placement.Owner];
+                if (match.GamePhase != GamePhase.Setup) throw new BadGameStateException();
+
+                var board = match.Playerboards[placement.Owner];
                 var coordinate = placement.Coordinate;
 
                 // Don't allow duplicate ships
@@ -66,7 +66,7 @@ namespace Battleship.Game
                     return false;
                 }
                 // Basic bounds checks
-                else if (coordinate.X >= game.Size || coordinate.Y >= game.Size ||
+                else if (coordinate.X >= match.Size || coordinate.Y >= match.Size ||
                     coordinate.X < 0 || coordinate.Y < 0)
                 {
                     return false;

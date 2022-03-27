@@ -10,8 +10,6 @@
         internal readonly Dictionary<Placement, ShipState> Ships;
         private readonly ShipName?[,] PlayerBoard;
 
-        private GameBoard() { }
-
         internal GameBoard(int size)
         {
             Size = size;

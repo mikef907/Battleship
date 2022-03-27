@@ -5,7 +5,7 @@ namespace Battleship.Tests
         [Fact]
         public void Create_Should_ReturnBattleshipGame()
         {
-            BattleshipFactory.Create().Should().NotBeNull().And.BeAssignableTo<BattleshipGame>();
+            BattleshipFactory.Create().Should().NotBeNull().And.BeAssignableTo<BattleshipMatch>();
         }
     }
 }

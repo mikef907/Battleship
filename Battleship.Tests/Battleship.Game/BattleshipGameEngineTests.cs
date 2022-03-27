@@ -6,7 +6,7 @@ namespace Battleship.Tests
     public class BattleshipGameEngineTests
     {
         private readonly BattleshipGameEngine sut;
-        private readonly BattleshipGame game;
+        private readonly BattleshipMatch game;
 
         public BattleshipGameEngineTests()
         {
@@ -185,7 +185,7 @@ namespace Battleship.Tests
 
             sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Up, Player.One), new Carrier());
 
-            sut.CheckGameState(game).Should().BeNull();
+            sut.CheckMatchState(game).Should().BeNull();
         }
 
         [Fact]
@@ -194,7 +194,7 @@ namespace Battleship.Tests
             sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Up, Player.Two), new Carrier());
 
             // Be virtual of Player one not having any ships on the board
-            sut.CheckGameState(game).Should().Be(Player.Two);
+            sut.CheckMatchState(game).Should().Be(Player.Two);
 
             sut.PlaceShip(game, new Placement(new Coordinate(0, 0), Direction.Right, Player.One), new Patrol_Boat());
 
@@ -205,7 +205,7 @@ namespace Battleship.Tests
             sut.MarkCoordinate(game, new Coordinate(1, 0), Player.Two, Player.One);
 
             // Actually sunk a ship and has no remaining ships
-            sut.CheckGameState(game).Should().Be(Player.Two);
+            sut.CheckMatchState(game).Should().Be(Player.Two);
         }
     }
 }

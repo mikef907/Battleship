@@ -1,20 +1,11 @@
 ﻿namespace Battleship.Game.Models
 {
-    public enum GamePhase
-    { 
-        Setup,
-        Main,
-        Completed
-    }
-
-    public class BadGameStateException : Exception { }
-
-    public class BattleshipGame
+    public class BattleshipMatch
     {
         public readonly int Size = 10;
         public GamePhase GamePhase { get; private set; }
 
-        public BattleshipGame()
+        public BattleshipMatch()
         {
             Id = Guid.NewGuid();
             GamePhase = GamePhase.Setup;
@@ -31,7 +22,7 @@
         public void TransitionGamePhase()
         {
             switch (GamePhase)
-            { 
+            {
                 case GamePhase.Setup:
                     GamePhase = GamePhase.Main;
                     break;

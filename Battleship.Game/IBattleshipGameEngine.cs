@@ -4,8 +4,8 @@ namespace Battleship.Game
 {
     public interface IBattleshipGameEngine
     {
-        public bool PlaceShip(GameBoard board, Placement placement, IShip ship);
-        public Result CheckCoordinate(GameBoard state, Coordinate coordinate);
-        public Player? CheckGameState(GameState board);
+        Player? CheckMatchState(BattleshipMatch game);
+        (Result, ShipName?) MarkCoordinate(BattleshipMatch game, Coordinate coordinate, Player attacker, Player against);
+        bool PlaceShip(BattleshipMatch game, Placement placement, IShip ship);
     }
 }
