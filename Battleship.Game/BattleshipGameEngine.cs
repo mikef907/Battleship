@@ -34,11 +34,11 @@ namespace Battleship.Game
             }
         }
 
-        public Player? CheckMatchState(BattleshipMatch match)
+        public virtual Player? CheckMatchState(BattleshipMatch match)
         {
             try
             {
-                if (match.Playerboards.Any(_ => _.Value.Ships.All(__ => __.Value.IsSunk)))
+                if (match.AllShipsPlaced && match.Playerboards.Any(_ => _.Value.Ships.All(__ => __.Value.IsSunk)))
                 {
                     return match.Playerboards.Single(_ => !_.Value.Ships.All(__ => __.Value.IsSunk)).Key;
                 }

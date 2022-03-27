@@ -1,6 +1,6 @@
 namespace Battleship.Tests
 {
-    public class BattleshipFactorTests
+    public class BattleshipFactoryTests
     {
         [Fact]
         public void Create_Should_ReturnBattleshipGame()

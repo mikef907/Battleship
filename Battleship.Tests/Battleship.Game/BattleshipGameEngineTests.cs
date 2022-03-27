@@ -1,5 +1,4 @@
-﻿using NSubstitute.ExceptionExtensions;
-using Bship = Battleship.Game.Models.Battleship;
+﻿using Bship = Battleship.Game.Models.Battleship;
 
 namespace Battleship.Tests
 {
@@ -68,7 +67,7 @@ namespace Battleship.Tests
         public void PlaceShip_ShouldNot_AllowShipsToOverlap()
         {
             Placement placement = new Placement(new Coordinate(5, 5), Direction.Up, Player.One);
-            
+
             // Size of 5
             IShip ship = new Carrier();
 
@@ -181,7 +180,11 @@ namespace Battleship.Tests
         [Fact]
         public void CheckGameState_Should_ReturnNull()
         {
+            sut.CheckMatchState(game).Should().BeNull();
+
             sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Up, Player.Two), new Carrier());
+
+            sut.CheckMatchState(game).Should().BeNull();
 
             sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Up, Player.One), new Carrier());
 
@@ -191,20 +194,58 @@ namespace Battleship.Tests
         [Fact]
         public void CheckGameState_Should_ReturnPlayer()
         {
-            sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Up, Player.Two), new Carrier());
+            // Player 1 Ships
+            sut.PlaceShip(game, new Placement(new Coordinate(0, 0), Direction.Down, Player.One), new Carrier()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(1, 0), Direction.Down, Player.One), new Bship()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(2, 0), Direction.Down, Player.One), new Submarine()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(3, 0), Direction.Down, Player.One), new Patrol_Boat()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(4, 0), Direction.Down, Player.One), new Destroyer()).Should().BeTrue();
 
-            // Be virtual of Player one not having any ships on the board
-            sut.CheckMatchState(game).Should().Be(Player.Two);
-
-            sut.PlaceShip(game, new Placement(new Coordinate(0, 0), Direction.Right, Player.One), new Patrol_Boat());
+            // Player 2 Ships
+            sut.PlaceShip(game, new Placement(new Coordinate(0, 0), Direction.Down, Player.Two), new Carrier()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(1, 0), Direction.Down, Player.Two), new Bship()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(2, 0), Direction.Down, Player.Two), new Submarine()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(3, 0), Direction.Down, Player.Two), new Patrol_Boat()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(4, 0), Direction.Down, Player.Two), new Destroyer()).Should().BeTrue();
 
             game.TransitionGamePhase();
 
-            sut.MarkCoordinate(game, new Coordinate(0, 0), Player.Two, Player.One);
+            // Sink Carrier
+            sut.MarkCoordinate(game, new Coordinate(0, 0), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(0, 1), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(0, 2), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(0, 3), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(0, 4), Player.Two, Player.One).Should().Be((Result.Sunk, ShipName.Carrier));
 
-            sut.MarkCoordinate(game, new Coordinate(1, 0), Player.Two, Player.One);
+            sut.CheckMatchState(game).Should().BeNull();
 
-            // Actually sunk a ship and has no remaining ships
+            // Sink Bhip
+            sut.MarkCoordinate(game, new Coordinate(1, 0), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(1, 1), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(1, 2), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(1, 3), Player.Two, Player.One).Should().Be((Result.Sunk, ShipName.Battleship));
+
+            sut.CheckMatchState(game).Should().BeNull();
+
+            // Sink Sub
+            sut.MarkCoordinate(game, new Coordinate(2, 0), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(2, 1), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(2, 2), Player.Two, Player.One).Should().Be((Result.Sunk, ShipName.Submarine));
+
+            sut.CheckMatchState(game).Should().BeNull();
+
+            // Sink Patrol Boat
+            sut.MarkCoordinate(game, new Coordinate(3, 0), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(3, 1), Player.Two, Player.One).Should().Be((Result.Sunk, ShipName.Patrol_Boat));
+
+            sut.CheckMatchState(game).Should().BeNull();
+
+            // Sink Destroyer
+            sut.MarkCoordinate(game, new Coordinate(4, 0), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(4, 1), Player.Two, Player.One).Should().Be((Result.Hit, null));
+            sut.MarkCoordinate(game, new Coordinate(4, 2), Player.Two, Player.One).Should().Be((Result.Sunk, ShipName.Destroyer));
+
+            // All ships should now be sunk for player one
             sut.CheckMatchState(game).Should().Be(Player.Two);
         }
     }

@@ -3,12 +3,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Battleship.Game
 {
-    public class BattleshipService
+    public class BattleshipService : IBattleshipService
     {
-        private static IDictionary<Guid, BattleshipMatch> games
+        protected static IDictionary<Guid, BattleshipMatch> matches
             = new Dictionary<Guid, BattleshipMatch>();
 
-        private readonly IBattleshipGameEngine engine;
+        protected readonly IBattleshipGameEngine engine;
         private readonly ILogger logger;
 
         public BattleshipService(IBattleshipGameEngine engine, ILogger logger)
@@ -17,30 +17,62 @@ namespace Battleship.Game
             this.logger = logger;
         }
 
-        public Guid StartGame()
+        public Guid NewGame()
         {
             var game = BattleshipFactory.Create();
-            games.Add(game.Id, game);
+            matches.Add(game.Id, game);
             return game.Id;
         }
 
         public Player? CheckMatchState(Guid guid)
         {
-            if (games.TryGetValue(guid, out var match))
-            { 
-                return engine.CheckMatchState(match);
+            var match = GetMatch(guid);
+
+            if (engine.CheckMatchState(match) is var player && player != null)
+            {
+                match.TransitionGamePhase();
+                return player;
+            }
+            else return null;
+        }
+
+        public int GetMaxShips(Guid guid) => GetMatch(guid).NumShipsPerPlayer * Enum.GetValues(typeof(Player)).Length;
+
+        public bool TryStartGame(Guid guid, out GamePhase gamePhase)
+        {
+            var match = GetMatch(guid);
+
+            var result = match.AllShipsPlaced;
+
+            if (result)
+            {
+                match.TransitionGamePhase();
             }
 
-            var exception = new MatchNotFoundException();
-            logger.LogError(exception, guid.ToString());
-            throw exception;
+            gamePhase = match.GamePhase;
+
+            return result;
+        }
+
+        public bool TryPlaceShip(Guid guid, Placement placement, IShip ship, out int shipsPlaced)
+        {
+            var match = GetMatch(guid);
+
+            bool result = engine.PlaceShip(match, placement, ship);
+
+            shipsPlaced = match.Playerboards.Values.Select(_ => _.Ships.Count).Sum();
+
+            return result;
         }
 
         public (Result, ShipName?) FireShot(Guid guid, Coordinate coordinate, Player attacker, Player against)
+            => engine.MarkCoordinate(GetMatch(guid), coordinate, attacker, against);
+
+        private BattleshipMatch GetMatch(Guid guid)
         {
-            if (games.TryGetValue(guid, out var match))
+            if (matches.TryGetValue(guid, out var match))
             {
-                return engine.MarkCoordinate(match, coordinate, attacker, against);
+                return match;
             }
 
             var exception = new MatchNotFoundException();
