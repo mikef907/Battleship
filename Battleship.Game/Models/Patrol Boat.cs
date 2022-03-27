@@ -1,6 +1,6 @@
 ﻿namespace Battleship.Game.Models
 {
-    public record Patrol_Boat : IShip
+    public readonly record struct Patrol_Boat : IShip
     {
         public int Size => 2;
 

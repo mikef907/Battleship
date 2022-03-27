@@ -1,6 +1,6 @@
 ﻿namespace Battleship.Game.Models
 {
-    public record Destroyer : IShip
+    public readonly record struct Destroyer : IShip
     {
         public int Size => 3;
 
