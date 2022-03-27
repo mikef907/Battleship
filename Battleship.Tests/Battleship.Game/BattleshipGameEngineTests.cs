@@ -1,4 +1,5 @@
-﻿using Bship = Battleship.Game.Models.Battleship;
+﻿using NSubstitute.ExceptionExtensions;
+using Bship = Battleship.Game.Models.Battleship;
 
 namespace Battleship.Tests
 {
@@ -126,6 +127,68 @@ namespace Battleship.Tests
             placement = new Placement(new Coordinate(9, 9), Direction.Left, Player.One);
 
             sut.PlaceShip(game, placement, ship).Should().BeTrue();
+        }
+
+        [Fact]
+        public void MarkCoordinate_Should_ReturnResultTuple()
+        {
+            sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Up, Player.Two), new Carrier());
+
+            game.TransitionGamePhase();
+
+            sut.MarkCoordinate(game, new Coordinate(), Player.One, Player.Two).Should().Be((Result.Miss, null));
+
+            sut.MarkCoordinate(game, new Coordinate(5, 5), Player.One, Player.Two).Should().Be((Result.Hit, null));
+
+            sut.MarkCoordinate(game, new Coordinate(5, 4), Player.One, Player.Two).Should().Be((Result.Hit, null));
+
+            sut.MarkCoordinate(game, new Coordinate(5, 3), Player.One, Player.Two).Should().Be((Result.Hit, null));
+
+            sut.MarkCoordinate(game, new Coordinate(5, 2), Player.One, Player.Two).Should().Be((Result.Hit, null));
+
+            sut.MarkCoordinate(game, new Coordinate(5, 1), Player.One, Player.Two).Should().Be((Result.Sunk, ShipName.Carrier));
+        }
+
+        [Fact]
+        public void MarkCoordinate_ShouldNot_AllowDuplicateMoves()
+        {
+            game.TransitionGamePhase();
+
+            sut.MarkCoordinate(game, new Coordinate(), Player.One, Player.Two).Should().Be((Result.Miss, null));
+
+            Action act = () => sut.MarkCoordinate(game, new Coordinate(), Player.One, Player.Two);
+
+            act.Should().Throw<InvalidOperationException>().WithMessage("Move would be duplicate");
+        }
+
+        [Fact]
+        public void CheckGameState_Should_ReturnNull()
+        {
+            sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Up, Player.Two), new Carrier());
+
+            sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Up, Player.One), new Carrier());
+
+            sut.CheckGameState(game).Should().BeNull();
+        }
+
+        [Fact]
+        public void CheckGameState_Should_ReturnPlayer()
+        {
+            sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Up, Player.Two), new Carrier());
+
+            // Be virtual of Player one not having any ships on the board
+            sut.CheckGameState(game).Should().Be(Player.Two);
+
+            sut.PlaceShip(game, new Placement(new Coordinate(0, 0), Direction.Right, Player.One), new Patrol_Boat());
+
+            game.TransitionGamePhase();
+
+            sut.MarkCoordinate(game, new Coordinate(0, 0), Player.Two, Player.One);
+
+            sut.MarkCoordinate(game, new Coordinate(1, 0), Player.Two, Player.One);
+
+            // Actually sunk a ship and has no remaining ships
+            sut.CheckGameState(game).Should().Be(Player.Two);
         }
     }
 }

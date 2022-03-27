@@ -7,15 +7,15 @@
     public record GameBoard
     {
         private readonly int Size;
-        internal readonly Dictionary<Placement, IShip> Ships;
+        internal readonly Dictionary<Placement, ShipState> Ships;
         private readonly ShipName?[,] PlayerBoard;
 
         private GameBoard() { }
 
-        internal GameBoard(int size) 
+        internal GameBoard(int size)
         {
             Size = size;
-            Ships = new Dictionary<Placement, IShip>();
+            Ships = new Dictionary<Placement, ShipState>();
             PlayerBoard = new ShipName?[Size, Size];
         }
 
@@ -25,17 +25,35 @@
             {
                 return false;
             }
-   
+
             // Write update once all coordinates are valid
             foreach (var coord in coordinates)
             {
                 PlayerBoard[coord.X, coord.Y] = shipName;
             }
 
-            return true;            
+            return true;
         }
 
-        public bool CheckShipPlacement(Coordinate coordinate)
+        public (Result, ShipName?) CheckForHit(Coordinate coordinate)
+        {
+            if (PlayerBoard[coordinate.X, coordinate.Y] != null)
+            {
+                var shipState = Ships.Single(_ => _.Value.Ship.Name == PlayerBoard[coordinate.X, coordinate.Y]).Value;
+
+                shipState.IncrementHits();
+
+                if(shipState.IsSunk)
+                {
+                    return (Result.Sunk, shipState.Ship.Name);
+                }
+
+                return (Result.Hit, null);
+            }
+            return (Result.Miss, null);
+        }
+
+        private bool CheckShipPlacement(Coordinate coordinate)
         {
             // Bounds check
             if (coordinate.X > Size || coordinate.Y > Size

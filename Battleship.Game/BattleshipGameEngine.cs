@@ -12,30 +12,61 @@ namespace Battleship.Game
             Logger = logger;
         }
 
-        public Result CheckCoordinate(BattleshipGame game, Coordinate coordinate, Player player)
+        public (Result, ShipName?) MarkCoordinate(BattleshipGame game, Coordinate coordinate, Player attacker, Player against)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (game.GamePhase != GamePhase.Main) throw new BadGameStateException();
+
+                if (game.State.CheckDuplicateMove(attacker, coordinate))
+                    throw new InvalidOperationException("Move would be duplicate");
+
+                var results = game.Playerboards[against].CheckForHit(coordinate);
+
+                game.State.AppendMove(ValueTuple.Create(attacker, coordinate, results.Item1, results.Item2));
+
+                return results;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(exception: ex, message: "Error Marking Coordinate");
+                throw;
+            }
         }
 
         public Player? CheckGameState(BattleshipGame game)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (game.Playerboards.Any(_ => _.Value.Ships.All(__ => __.Value.IsSunk)))
+                {
+                    return game.Playerboards.Single(_ => !_.Value.Ships.All(__ => __.Value.IsSunk)).Key;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(exception: ex, message: "Error Checking Game State");
+                throw;
+            }
         }
 
         public bool PlaceShip(BattleshipGame game, Placement placement, IShip ship)
         {
             try
             {
+                if (game.GamePhase != GamePhase.Setup) throw new BadGameStateException();
+                
                 var board = game.Playerboards[placement.Owner];
                 var coordinate = placement.Coordinate;
 
                 // Don't allow duplicate ships
-                if (board.Ships.Any(_ => _.Value == ship))
+                if (board.Ships.Any(_ => _.Value.Ship == ship))
                 {
                     return false;
                 }
                 // Basic bounds checks
-                else if (coordinate.X > game.SIZE || coordinate.Y > game.SIZE ||
+                else if (coordinate.X > game.Size || coordinate.Y > game.Size ||
                     coordinate.X < 0 || coordinate.Y < 0)
                 {
                     return false;
@@ -49,7 +80,7 @@ namespace Battleship.Game
                         return false;
                     }
 
-                    board.Ships.Add(placement, ship);
+                    board.Ships.Add(placement, new ShipState(ship));
 
                     return true;
                 }
@@ -57,7 +88,7 @@ namespace Battleship.Game
             catch (Exception ex)
             {
                 Logger.LogError(exception: ex, message: "Error Placing Ship");
-                return false;
+                throw;
             }
         }
 
