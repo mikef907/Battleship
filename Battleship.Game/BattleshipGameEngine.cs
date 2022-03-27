@@ -61,12 +61,12 @@ namespace Battleship.Game
                 var coordinate = placement.Coordinate;
 
                 // Don't allow duplicate ships
-                if (board.Ships.Any(_ => _.Value.Ship == ship))
+                if (board.Ships.Any(_ => _.Value.Ship.Name == ship.Name))
                 {
                     return false;
                 }
                 // Basic bounds checks
-                else if (coordinate.X > game.Size || coordinate.Y > game.Size ||
+                else if (coordinate.X >= game.Size || coordinate.Y >= game.Size ||
                     coordinate.X < 0 || coordinate.Y < 0)
                 {
                     return false;

@@ -46,6 +46,23 @@ namespace Battleship.Tests
             sut.PlaceShip(game, placement, ship).Should().BeFalse();
         }
 
+        [Fact]
+        public void PlaceShip_ShouldNot_AllowShipsToBePlacedOutOfBounds()
+        {
+            Placement placement = new Placement(new Coordinate(10, 10), Direction.Up, Player.One);
+            Carrier? ship = new Carrier();
+
+            sut.PlaceShip(game, placement, ship).Should().BeFalse();
+
+            placement = new Placement(new Coordinate(-1, -1), Direction.Up, Player.One);
+            sut.PlaceShip(game, placement, ship).Should().BeFalse();
+
+            placement = new Placement(new Coordinate(0, -1), Direction.Up, Player.One);
+            sut.PlaceShip(game, placement, ship).Should().BeFalse();
+
+            placement = new Placement(new Coordinate(9, 10), Direction.Up, Player.One);
+            sut.PlaceShip(game, placement, ship).Should().BeFalse();
+        }
 
         [Fact]
         public void PlaceShip_ShouldNot_AllowShipsToOverlap()
