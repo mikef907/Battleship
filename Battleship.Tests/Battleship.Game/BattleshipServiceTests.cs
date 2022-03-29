@@ -2,13 +2,15 @@
 {
     public class BattleshipServiceTests: BattleshipService
     {
-        private readonly Player playerOne = new Player(Guid.NewGuid(), "PlayerOne");
-        private readonly Player playerTwo = new Player(Guid.NewGuid(), "PlayerTwo");
+        private readonly Player playerOne;
+        private readonly Player playerTwo;
         private readonly Guid matchId;
 
         public BattleshipServiceTests()
             : base(Substitute.ForPartsOf<BattleshipGameEngine>(Substitute.For<ILogger>()), Substitute.For<ILogger>())
         {
+            playerOne = BattleshipFactory.CreatePlayer("PlayerOne");
+            playerTwo = BattleshipFactory.CreatePlayer("PlayerTwo");
             matches.Clear();
             matchId = NewGame(playerOne, playerTwo);
         }

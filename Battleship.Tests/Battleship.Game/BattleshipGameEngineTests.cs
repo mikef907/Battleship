@@ -6,13 +6,15 @@ namespace Battleship.Tests
     {
         private readonly BattleshipGameEngine sut;
         private readonly BattleshipMatch game;
-        private readonly Player playerOne = new Player(Guid.NewGuid(), "PlayerOne");
-        private readonly Player playerTwo = new Player(Guid.NewGuid(), "PlayerTwo");
+        private readonly Player playerOne;
+        private readonly Player playerTwo;
 
         public BattleshipGameEngineTests()
         {
             sut = new BattleshipGameEngine(Substitute.For<ILogger>());
-            game = BattleshipFactory.Create(playerOne, playerTwo);
+            playerOne = BattleshipFactory.CreatePlayer("PlayerOne");
+            playerTwo = BattleshipFactory.CreatePlayer("PlayerTwo");
+            game = BattleshipFactory.CreateMatch(playerOne, playerTwo);
         }
 
         [Fact]

@@ -19,7 +19,7 @@ namespace Battleship.Game
 
         public Guid NewGame(Player playerOne, Player playerTwo)
         {
-            var game = BattleshipFactory.Create(playerOne, playerTwo);
+            var game = BattleshipFactory.CreateMatch(playerOne, playerTwo);
             matches.Add(game.Id, game);
             return game.Id;
         }

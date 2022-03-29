@@ -3,9 +3,20 @@ namespace Battleship.Tests
     public class BattleshipFactoryTests
     {
         [Fact]
-        public void Create_Should_ReturnBattleshipGame()
+        public void CreatePlayer_Should_ReturnPlayer()
         {
-            BattleshipFactory.Create(new Player(Guid.NewGuid(), "PlayerOne"), new Player(Guid.NewGuid(), "PlayerTwo"))
+            BattleshipFactory.CreatePlayer("PlayerOne").Should().BeAssignableTo<Player>().Subject.Guid.Should().NotBeEmpty();
+
+            var guid = Guid.NewGuid();
+
+            BattleshipFactory.CreatePlayer("PlayerOne", guid).Guid.Should().Be(guid);
+
+        }
+
+        [Fact]
+        public void CreateMatch_Should_ReturnBattleshipGame()
+        {
+            BattleshipFactory.CreateMatch(new Player(Guid.NewGuid(), "PlayerOne"), new Player(Guid.NewGuid(), "PlayerTwo"))
                 .Should().NotBeNull().And.BeAssignableTo<BattleshipMatch>();
         }
     }
