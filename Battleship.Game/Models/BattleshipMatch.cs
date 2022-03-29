@@ -30,6 +30,7 @@
             {
                 case GamePhase.Setup:
                     GamePhase = GamePhase.Main;
+                    State.CurrentTurn = Playerboards.First().Key;
                     break;
                 case GamePhase.Main:
                     GamePhase = GamePhase.Completed;

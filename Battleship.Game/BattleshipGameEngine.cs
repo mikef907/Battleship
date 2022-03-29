@@ -25,6 +25,8 @@ namespace Battleship.Game
 
                 match.State.AppendMove(ValueTuple.Create(attacker, coordinate, results.Item1, results.Item2));
 
+                match.State.CurrentTurn = against;
+
                 return results;
             }
             catch (Exception ex)

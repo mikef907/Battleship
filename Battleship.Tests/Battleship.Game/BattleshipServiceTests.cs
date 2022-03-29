@@ -83,5 +83,28 @@
 
             FireShot(match.Id, new Coordinate(0, 0), playerOne, playerTwo).Should().Be((Result.Miss, null));
         }
+
+        [Fact]
+        public void CurrentTurn_Should_ReturnPlayer()
+        {
+            matches[matchId].TransitionGamePhase();
+
+            CurrentTurn(matchId).Should().NotBeNull().And.Be(playerOne);
+            FireShot(matchId, new Coordinate(0, 0), playerOne, playerTwo).Should().Be((Result.Miss, null));
+            CurrentTurn(matchId).Should().NotBeNull().And.Be(playerTwo);
+            FireShot(matchId, new Coordinate(0, 0), playerTwo, playerOne).Should().Be((Result.Miss, null));
+            CurrentTurn(matchId).Should().NotBeNull().And.Be(playerOne);
+        }
+
+        [Fact]
+        public void FireShot_Should_ThrowExceptionWhenNotAttackerCurrentTurn()
+        {
+            matches[matchId].TransitionGamePhase();
+
+            CurrentTurn(matchId).Should().NotBeNull().And.Be(playerOne);
+            FireShot(matchId, new Coordinate(0, 0), playerOne, playerTwo).Should().Be((Result.Miss, null));
+            var act = () => FireShot(matchId, new Coordinate(1, 0), playerOne, playerTwo);
+            act.Should().Throw<InvalidOperationException>().WithMessage("Not attackers turn");
+        }
     }
 }

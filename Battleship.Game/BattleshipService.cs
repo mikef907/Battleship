@@ -24,6 +24,13 @@ namespace Battleship.Game
             return game.Id;
         }
 
+        public Player CurrentTurn(Guid guid)
+        {
+            var match = GetMatch(guid);
+
+            return match.State.CurrentTurn;
+        }
+
         public Player? CheckMatchState(Guid guid)
         {
             var match = GetMatch(guid);
@@ -66,7 +73,12 @@ namespace Battleship.Game
         }
 
         public (Result, ShipName?) FireShot(Guid guid, Coordinate coordinate, Player attacker, Player against)
-            => engine.MarkCoordinate(GetMatch(guid), coordinate, attacker, against);
+        {
+            if (CurrentTurn(guid) != attacker)
+                throw new InvalidOperationException("Not attackers turn");
+
+            return engine.MarkCoordinate(GetMatch(guid), coordinate, attacker, against);
+        }
 
         private BattleshipMatch GetMatch(Guid guid)
         {
