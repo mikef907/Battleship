@@ -4,9 +4,9 @@ namespace Battleship.Game
 {
     public static class BattleshipFactory
     {
-        public static BattleshipMatch Create()
+        public static BattleshipMatch Create(Player playerOne, Player playerTwo)
         {
-            return new BattleshipMatch();
+            return new BattleshipMatch(playerOne, playerTwo);
         }
     }
 }

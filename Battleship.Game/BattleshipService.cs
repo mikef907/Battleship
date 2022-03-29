@@ -17,9 +17,9 @@ namespace Battleship.Game
             this.logger = logger;
         }
 
-        public Guid NewGame()
+        public Guid NewGame(Player playerOne, Player playerTwo)
         {
-            var game = BattleshipFactory.Create();
+            var game = BattleshipFactory.Create(playerOne, playerTwo);
             matches.Add(game.Id, game);
             return game.Id;
         }
@@ -36,7 +36,7 @@ namespace Battleship.Game
             else return null;
         }
 
-        public int GetMaxShips(Guid guid) => GetMatch(guid).NumShipsPerPlayer * Enum.GetValues(typeof(Player)).Length;
+        public int GetMaxShips(Guid guid) => GetMatch(guid).NumShipsPerPlayer * 2;
 
         public bool TryStartGame(Guid guid, out GamePhase gamePhase)
         {

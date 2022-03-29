@@ -10,15 +10,15 @@
         public virtual bool AllShipsPlaced =>
             Playerboards.Values.All(_ => _.Ships.Count == NumShipsPerPlayer);
 
-        public BattleshipMatch()
+        public BattleshipMatch(Player playerOne, Player playerTwo)
         {
             Id = Guid.NewGuid();
             GamePhase = GamePhase.Setup;
             State = new GameState();
             Playerboards = new Dictionary<Player, GameBoard>();
 
-            Playerboards.Add(Player.One, new GameBoard(Size));
-            Playerboards.Add(Player.Two, new GameBoard(Size));
+            Playerboards.Add(playerOne, new GameBoard(Size));
+            Playerboards.Add(playerTwo, new GameBoard(Size));
         }
 
         public Guid Id { get; init; }

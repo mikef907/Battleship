@@ -2,13 +2,15 @@
 {
     public class BattleshipServiceTests: BattleshipService
     {
+        private readonly Player playerOne = new Player(Guid.NewGuid(), "PlayerOne");
+        private readonly Player playerTwo = new Player(Guid.NewGuid(), "PlayerTwo");
         private readonly Guid matchId;
 
         public BattleshipServiceTests()
             : base(Substitute.ForPartsOf<BattleshipGameEngine>(Substitute.For<ILogger>()), Substitute.For<ILogger>())
         {
             matches.Clear();
-            matchId = NewGame();
+            matchId = NewGame(playerOne, playerTwo);
         }
 
         [Fact]
@@ -29,9 +31,9 @@
         {
             var match = matches[matchId];
 
-            engine.CheckMatchState(match).Returns(Player.One);
+            engine.CheckMatchState(match).Returns(playerOne);
 
-            CheckMatchState(matchId).Should().Be(Player.One);
+            CheckMatchState(matchId).Should().Be(playerOne);
         }
 
         [Fact]
@@ -47,7 +49,7 @@
 
             gamePhase.Should().Be(GamePhase.Setup);
 
-            var match = Substitute.For<BattleshipMatch>();
+            var match = Substitute.For<BattleshipMatch>(playerOne, playerTwo);
 
             match.AllShipsPlaced.Returns(true);
 
@@ -61,7 +63,7 @@
         [Fact]
         public void TryPlaceShip_Should_ReturnBool()
         {
-            var placement = new Placement { Coordinate = new Coordinate(0, 0), Direction = Direction.Down, Owner = Player.One };
+            var placement = new Placement { Coordinate = new Coordinate(0, 0), Direction = Direction.Down, Owner = playerOne };
             
             TryPlaceShip(matchId, placement, new Carrier(), out int shipsPlaced).Should().BeTrue();
 
@@ -71,13 +73,13 @@
         [Fact]
         public void FireShot_Should_ReturnResult()
         {
-            var match = new BattleshipMatch();
+            var match = new BattleshipMatch(playerOne, playerTwo);
 
             match.TransitionGamePhase();
 
             matches.Add(match.Id, match);
 
-            FireShot(match.Id, new Coordinate(0, 0), Player.One, Player.Two).Should().Be((Result.Miss, null));
+            FireShot(match.Id, new Coordinate(0, 0), playerOne, playerTwo).Should().Be((Result.Miss, null));
         }
     }
 }
