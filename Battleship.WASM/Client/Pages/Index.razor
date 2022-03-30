@@ -1,9 +1,6 @@
 ﻿@page "/"
-@using Battleship.App.Hubs
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager NavigationManager
-@inject ILogger<BattleshipHub> _logger
-@inject IJSRuntime JS
 @implements IAsyncDisposable
 
 
@@ -64,8 +61,6 @@ Welcome to your new app.
         hubConnection.On<Game.Models.Player>("JoinQueueResponse", (player) =>
         {
             Console.WriteLine(player);
-            _logger.LogInformation(player.ToString());
-            JS.InvokeVoidAsync("console.log", player.ToString()).GetAwaiter().GetResult();
         });
 
         await hubConnection.StartAsync();
