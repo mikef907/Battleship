@@ -1,5 +1,7 @@
+using Battleship.WASM.Server.Services;
 using Battleship.WASM.Server.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddMediatR(typeof(Program));
+builder.Services.AddHostedService<MatchMakingService>();
+builder.Services.AddSingleton<PlayerQueue>();
+
 builder.Services.AddResponseCompression(opts =>
 {
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
