@@ -14,8 +14,9 @@ namespace Battleship.WASM.Server.Services
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
-            { 
+            {
                 await _mediator.Publish(new MatchMaker(), stoppingToken);
+
                 await Task.Delay(1000, stoppingToken);
             }
         }

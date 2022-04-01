@@ -63,6 +63,11 @@ Welcome to your new app.
             Console.WriteLine(player);
         });
 
+        hubConnection.On<Guid>("NotifyMatchFoundResponse", (matchId) =>
+        {
+            Console.WriteLine($"Match found {matchId}");
+        });
+
         await hubConnection.StartAsync();
     }
 

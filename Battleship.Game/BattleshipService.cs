@@ -11,45 +11,51 @@ namespace Battleship.Game
         protected readonly IBattleshipGameEngine engine;
         private readonly ILogger logger;
 
-        public BattleshipService(IBattleshipGameEngine engine, ILogger logger)
+        public BattleshipService(IBattleshipGameEngine engine, ILoggerFactory loggerFactory)
         {
             this.engine = engine;
-            this.logger = logger;
+            this.logger = loggerFactory.CreateLogger(nameof(BattleshipService));
         }
 
         public Guid NewGame(Player playerOne, Player playerTwo)
         {
-            var game = BattleshipFactory.CreateMatch(playerOne, playerTwo);
+            BattleshipMatch? game = BattleshipFactory.CreateMatch(playerOne, playerTwo);
             matches.Add(game.Id, game);
             return game.Id;
         }
 
         public Player CurrentTurn(Guid guid)
         {
-            var match = GetMatch(guid);
+            BattleshipMatch? match = GetMatch(guid);
 
             return match.State.CurrentTurn;
         }
 
         public Player? CheckMatchState(Guid guid)
         {
-            var match = GetMatch(guid);
+            BattleshipMatch? match = GetMatch(guid);
 
             if (engine.CheckMatchState(match) is var player && player != null)
             {
                 match.TransitionGamePhase();
                 return player;
             }
-            else return null;
+            else
+            {
+                return null;
+            }
         }
 
-        public int GetMaxShips(Guid guid) => GetMatch(guid).NumShipsPerPlayer * 2;
+        public int GetMaxShips(Guid guid)
+        {
+            return GetMatch(guid).NumShipsPerPlayer * 2;
+        }
 
         public bool TryStartGame(Guid guid, out GamePhase gamePhase)
         {
-            var match = GetMatch(guid);
+            BattleshipMatch? match = GetMatch(guid);
 
-            var result = match.AllShipsPlaced;
+            bool result = match.AllShipsPlaced;
 
             if (result)
             {
@@ -63,7 +69,7 @@ namespace Battleship.Game
 
         public bool TryPlaceShip(Guid guid, Placement placement, IShip ship, out int shipsPlaced)
         {
-            var match = GetMatch(guid);
+            BattleshipMatch? match = GetMatch(guid);
 
             bool result = engine.PlaceShip(match, placement, ship);
 
@@ -75,19 +81,21 @@ namespace Battleship.Game
         public (Result, ShipName?) FireShot(Guid guid, Coordinate coordinate, Player attacker, Player against)
         {
             if (CurrentTurn(guid) != attacker)
+            {
                 throw new InvalidOperationException("Not attackers turn");
+            }
 
             return engine.MarkCoordinate(GetMatch(guid), coordinate, attacker, against);
         }
 
         private BattleshipMatch GetMatch(Guid guid)
         {
-            if (matches.TryGetValue(guid, out var match))
+            if (matches.TryGetValue(guid, out BattleshipMatch? match))
             {
                 return match;
             }
 
-            var exception = new MatchNotFoundException();
+            MatchNotFoundException? exception = new MatchNotFoundException();
             logger.LogError(exception, guid.ToString());
             throw exception;
         }

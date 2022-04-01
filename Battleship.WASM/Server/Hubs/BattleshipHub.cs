@@ -5,34 +5,35 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Battleship.WASM.Server.Hubs
 {
-
     public class BattleshipHub : Hub
     {
-        static List<Player> roster = new List<Player>();
         private readonly PlayerQueue _playerQueue;
+        private readonly PlayerConnections _players;
+        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        public BattleshipHub(PlayerQueue playerQueue)
+        public BattleshipHub(PlayerQueue playerQueue, PlayerConnections playerConnections)
         {
             _playerQueue = playerQueue;
+            _players = playerConnections;
         }
 
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
-        async public Task JoinQueue(string username)
+        public async Task JoinQueue(string username)
         {
             Player player;
 
             if (_playerQueue.Players.Any(_ => _.Username == username))
-                return;
-
-            if (roster.Any(_ => _.Username == username))
             {
-                player = roster.Single(_ => _.Username == username);
+                return;
+            }
+
+            if (_players.Connections.Keys.Any(_ => _.Username == username))
+            {
+                player = _players.Connections.Keys.Single(_ => _.Username == username);
             }
             else
             {
                 player = BattleshipFactory.CreatePlayer(username);
-                roster.Add(player);
+                _players.Connections.Add(player, Context.ConnectionId);
             }
 
             _playerQueue.Players.Enqueue(player);

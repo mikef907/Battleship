@@ -7,21 +7,26 @@ namespace Battleship.Game
     {
         private readonly ILogger Logger;
 
-        public BattleshipGameEngine(ILogger logger)
+        public BattleshipGameEngine(ILoggerFactory loggerFactory)
         {
-            Logger = logger;
+            Logger = loggerFactory.CreateLogger(nameof(BattleshipFactory));
         }
 
         public (Result, ShipName?) MarkCoordinate(BattleshipMatch match, Coordinate coordinate, Player attacker, Player against)
         {
             try
             {
-                if (match.GamePhase != GamePhase.Main) throw new BadGameStateException();
+                if (match.GamePhase != GamePhase.Main)
+                {
+                    throw new BadGameStateException();
+                }
 
                 if (match.State.CheckDuplicateMove(attacker, coordinate))
+                {
                     throw new InvalidOperationException("Move would be duplicate");
+                }
 
-                var results = match.Playerboards[against].CheckForHit(coordinate);
+                (Result, ShipName?) results = match.Playerboards[against].CheckForHit(coordinate);
 
                 match.State.AppendMove(ValueTuple.Create(attacker, coordinate, results.Item1, results.Item2));
 
@@ -57,10 +62,13 @@ namespace Battleship.Game
         {
             try
             {
-                if (match.GamePhase != GamePhase.Setup) throw new BadGameStateException();
+                if (match.GamePhase != GamePhase.Setup)
+                {
+                    throw new BadGameStateException();
+                }
 
-                var board = match.Playerboards[placement.Owner];
-                var coordinate = placement.Coordinate;
+                GameBoard? board = match.Playerboards[placement.Owner];
+                Coordinate coordinate = placement.Coordinate;
 
                 // Don't allow duplicate ships
                 if (board.Ships.Any(_ => _.Value.Ship.Name == ship.Name))
@@ -96,7 +104,7 @@ namespace Battleship.Game
 
         private static List<Coordinate> BuildWriteCoordinates(Placement placement, IShip ship, Coordinate coordinate)
         {
-            var writeCoordinates = new List<Coordinate>();
+            List<Coordinate>? writeCoordinates = new List<Coordinate>();
 
             switch (placement.Direction)
             {
