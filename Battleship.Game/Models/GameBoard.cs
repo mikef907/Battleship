@@ -25,7 +25,7 @@
             }
 
             // Write update once all coordinates are valid
-            foreach (var coord in coordinates)
+            foreach (Coordinate coord in coordinates)
             {
                 PlayerBoard[coord.X, coord.Y] = shipName;
             }
@@ -33,15 +33,34 @@
             return true;
         }
 
+        public IEnumerable<Coordinate> RemoveShipPlacement(ShipName shipName)
+        {
+            List<Coordinate>? coodinates = new List<Coordinate>();
+
+            for (int i = 0; i < Size; i++)
+            {
+                for (int j = 0; j < Size; j++)
+                {
+                    if (PlayerBoard[i, j] == shipName)
+                    {
+                        PlayerBoard[i, j] = null;
+                        coodinates.Add(new Coordinate(i, j));
+                    }
+                }
+            }
+
+            return coodinates;
+        }
+
         public (Result, ShipName?) CheckForHit(Coordinate coordinate)
         {
             if (PlayerBoard[coordinate.X, coordinate.Y] != null)
             {
-                var shipState = Ships.Single(_ => _.Value.Ship.Name == PlayerBoard[coordinate.X, coordinate.Y]).Value;
+                ShipState? shipState = Ships.Single(_ => _.Value.Ship.Name == PlayerBoard[coordinate.X, coordinate.Y]).Value;
 
                 shipState.IncrementHits();
 
-                if(shipState.IsSunk)
+                if (shipState.IsSunk)
                 {
                     return (Result.Sunk, shipState.Ship.Name);
                 }
@@ -54,7 +73,7 @@
         private bool CheckShipPlacement(Coordinate coordinate)
         {
             // Bounds check
-            if (coordinate.X > Size || coordinate.Y > Size
+            if (coordinate.X >= Size || coordinate.Y >= Size
                 || coordinate.X < 0 || coordinate.Y < 0)
             {
                 return false;

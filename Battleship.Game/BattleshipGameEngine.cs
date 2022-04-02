@@ -70,23 +70,35 @@ namespace Battleship.Game
                 GameBoard? board = match.Playerboards[placement.Owner];
                 Coordinate coordinate = placement.Coordinate;
 
-                // Don't allow duplicate ships
-                if (board.Ships.Any(_ => _.Value.Ship.Name == ship.Name))
-                {
-                    return false;
-                }
                 // Basic bounds checks
-                else if (coordinate.X >= match.Size || coordinate.Y >= match.Size ||
+                if (coordinate.X >= match.Size || coordinate.Y >= match.Size ||
                     coordinate.X < 0 || coordinate.Y < 0)
                 {
                     return false;
                 }
                 else
                 {
+                    // If current exists, attempt to replace, otherwise put current back if unable
+                    KeyValuePair<Placement, ShipState> _current = board.Ships.SingleOrDefault(_ => _.Value.Ship.Name == ship.Name);
+                    IEnumerable<Coordinate> replacementCoordinates = null;
+
+                    if (_current.Value is not null)
+                    {
+                        board.Ships.Remove(_current.Key);
+                        replacementCoordinates = board.RemoveShipPlacement(ship.Name);
+                    }
+
                     List<Coordinate> writeCoordinates = BuildWriteCoordinates(placement, ship, coordinate);
 
                     if (!board.WriteShipPlacement(writeCoordinates, ship.Name))
                     {
+                        // Replace current if it already was present
+                        if (_current.Value is not null && replacementCoordinates is not null)
+                        {
+                            board.Ships.Add(_current.Key, _current.Value);
+                            board.WriteShipPlacement(replacementCoordinates, ship.Name);
+                        }
+
                         return false;
                     }
 
