@@ -12,25 +12,25 @@
                 case Direction.Up:
                     for (int i = 0; i < ship.Size; i++)
                     {
-                        writeCoordinates.Add(new Coordinate(placement.Coordinate.X, placement.Coordinate.Y - i));
+                        writeCoordinates.Add(new Coordinate(placement.Coordinate.X - i, placement.Coordinate.Y));
                     }
                     break;
                 case Direction.Down:
                     for (int i = 0; i < ship.Size; i++)
                     {
-                        writeCoordinates.Add(new Coordinate(placement.Coordinate.X, placement.Coordinate.Y + i));
+                        writeCoordinates.Add(new Coordinate(placement.Coordinate.X + i, placement.Coordinate.Y));
                     }
                     break;
                 case Direction.Right:
                     for (int i = 0; i < ship.Size; i++)
                     {
-                        writeCoordinates.Add(new Coordinate(placement.Coordinate.X + i, placement.Coordinate.Y));
+                        writeCoordinates.Add(new Coordinate(placement.Coordinate.X, placement.Coordinate.Y + i));
                     }
                     break;
                 case Direction.Left:
                     for (int i = 0; i < ship.Size; i++)
                     {
-                        writeCoordinates.Add(new Coordinate(placement.Coordinate.X - i, placement.Coordinate.Y));
+                        writeCoordinates.Add(new Coordinate(placement.Coordinate.X, placement.Coordinate.Y - i));
                     }
                     break;
             }

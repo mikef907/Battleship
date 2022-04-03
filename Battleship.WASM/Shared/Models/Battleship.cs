@@ -1,6 +1,6 @@
 ﻿namespace Battleship.WASM.Shared
 {
-    public readonly record struct Battleship : IShip
+    public readonly record struct BattleShip : IShip
     {
         public int Size => 4;
 

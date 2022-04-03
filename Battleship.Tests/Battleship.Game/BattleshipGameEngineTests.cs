@@ -1,4 +1,4 @@
-﻿using Bship = Battleship.WASM.Shared.Battleship;
+﻿using Bship = Battleship.WASM.Shared.BattleShip;
 
 namespace Battleship.Tests
 {
@@ -48,7 +48,7 @@ namespace Battleship.Tests
 
             sut.PlaceShip(game, placement, ship).Should().BeTrue();
 
-            placement = new Placement(new Coordinate(9, 1), Direction.Right, playerOne);
+            placement = new Placement(new Coordinate(9, 1), Direction.Left, playerOne);
 
             sut.PlaceShip(game, placement, ship).Should().BeFalse();
         }
@@ -94,22 +94,19 @@ namespace Battleship.Tests
             int offset = ship.Size - 1;
 
             // Checks up edges
-            placement = new Placement(new Coordinate(5, 5 + offset), Direction.Up, playerOne);
+            placement = new Placement(new Coordinate(5, 5 + offset), Direction.Right, playerOne);
 
             sut.PlaceShip(game, placement, ship).Should().BeFalse();
 
-            // Checks down edges
-            placement = new Placement(new Coordinate(5, 5 - offset), Direction.Down, playerOne);
+            placement = new Placement(new Coordinate(5, 5 - offset), Direction.Left, playerOne);
 
             sut.PlaceShip(game, placement, ship).Should().BeFalse();
 
-            // Checks right edges
-            placement = new Placement(new Coordinate(5 - offset, 5), Direction.Right, playerOne);
+            placement = new Placement(new Coordinate(5 - offset, 5), Direction.Down, playerOne);
 
             sut.PlaceShip(game, placement, ship).Should().BeFalse();
 
-            // Checks left edges
-            placement = new Placement(new Coordinate(5 + offset, 5), Direction.Left, playerOne);
+            placement = new Placement(new Coordinate(5 + offset, 5), Direction.Up, playerOne);
 
             sut.PlaceShip(game, placement, ship).Should().BeFalse();
         }
@@ -127,14 +124,14 @@ namespace Battleship.Tests
             // Size of 4
             ship = new Bship();
 
-            placement = new Placement(new Coordinate(5 - ship.Size, 5), Direction.Right, playerOne);
+            placement = new Placement(new Coordinate(8, 5), Direction.Right, playerOne);
 
             sut.PlaceShip(game, placement, ship).Should().BeTrue();
 
             // Size of 3
             ship = new Destroyer();
 
-            placement = new Placement(new Coordinate(5 + ship.Size, 5), Direction.Left, playerOne);
+            placement = new Placement(new Coordinate(6, 5), Direction.Right, playerOne);
 
             sut.PlaceShip(game, placement, ship).Should().BeTrue();
 
@@ -156,7 +153,7 @@ namespace Battleship.Tests
         [Fact]
         public void MarkCoordinate_Should_ReturnResultTuple()
         {
-            sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Up, playerTwo), new Carrier());
+            sut.PlaceShip(game, new Placement(new Coordinate(5, 5), Direction.Left, playerTwo), new Carrier());
 
             game.TransitionGamePhase();
 
@@ -203,18 +200,18 @@ namespace Battleship.Tests
         public void CheckGameState_Should_ReturnPlayer()
         {
             // Player 1 Ships
-            sut.PlaceShip(game, new Placement(new Coordinate(0, 0), Direction.Down, playerOne), new Carrier()).Should().BeTrue();
-            sut.PlaceShip(game, new Placement(new Coordinate(1, 0), Direction.Down, playerOne), new Bship()).Should().BeTrue();
-            sut.PlaceShip(game, new Placement(new Coordinate(2, 0), Direction.Down, playerOne), new Submarine()).Should().BeTrue();
-            sut.PlaceShip(game, new Placement(new Coordinate(3, 0), Direction.Down, playerOne), new Patrol_Boat()).Should().BeTrue();
-            sut.PlaceShip(game, new Placement(new Coordinate(4, 0), Direction.Down, playerOne), new Destroyer()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(0, 0), Direction.Right, playerOne), new Carrier()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(1, 0), Direction.Right, playerOne), new Bship()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(2, 0), Direction.Right, playerOne), new Submarine()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(3, 0), Direction.Right, playerOne), new Patrol_Boat()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(4, 0), Direction.Right, playerOne), new Destroyer()).Should().BeTrue();
 
             // Player 2 Ships
-            sut.PlaceShip(game, new Placement(new Coordinate(0, 0), Direction.Down, playerTwo), new Carrier()).Should().BeTrue();
-            sut.PlaceShip(game, new Placement(new Coordinate(1, 0), Direction.Down, playerTwo), new Bship()).Should().BeTrue();
-            sut.PlaceShip(game, new Placement(new Coordinate(2, 0), Direction.Down, playerTwo), new Submarine()).Should().BeTrue();
-            sut.PlaceShip(game, new Placement(new Coordinate(3, 0), Direction.Down, playerTwo), new Patrol_Boat()).Should().BeTrue();
-            sut.PlaceShip(game, new Placement(new Coordinate(4, 0), Direction.Down, playerTwo), new Destroyer()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(0, 0), Direction.Right, playerTwo), new Carrier()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(1, 0), Direction.Right, playerTwo), new Bship()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(2, 0), Direction.Right, playerTwo), new Submarine()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(3, 0), Direction.Right, playerTwo), new Patrol_Boat()).Should().BeTrue();
+            sut.PlaceShip(game, new Placement(new Coordinate(4, 0), Direction.Right, playerTwo), new Destroyer()).Should().BeTrue();
 
             game.TransitionGamePhase();
 
