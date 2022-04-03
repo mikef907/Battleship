@@ -1,4 +1,4 @@
-﻿using Bship = Battleship.Game.Models.Battleship;
+﻿using Bship = Battleship.WASM.Shared.Battleship;
 
 namespace Battleship.Tests
 {
