@@ -1,5 +1,4 @@
-﻿using Battleship.Game;
-using Battleship.WASM.Server.Hubs;
+﻿using Battleship.WASM.Server.Hubs;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 
@@ -12,7 +11,7 @@ namespace Battleship.WASM.Server.Services
         private readonly IBattleshipService _battleshipService;
         private readonly IHubContext<BattleshipHub> _battleshipHub;
 
-        public MatchMakingHandler(PlayerQueue playerQueue, PlayerConnections players, IBattleshipService battleShipService,  IHubContext<BattleshipHub> battleshipHub)
+        public MatchMakingHandler(PlayerQueue playerQueue, PlayerConnections players, IBattleshipService battleShipService, IHubContext<BattleshipHub> battleshipHub)
         {
             _playerQueue = playerQueue;
             _battleshipService = battleShipService;
@@ -24,8 +23,8 @@ namespace Battleship.WASM.Server.Services
         {
             if (_playerQueue.Players.Count >= 2)
             {
-                Game.Models.Player player1 = _playerQueue.Players.Dequeue();
-                Game.Models.Player player2 = _playerQueue.Players.Dequeue();
+                Player player1 = _playerQueue.Players.Dequeue();
+                Player player2 = _playerQueue.Players.Dequeue();
 
                 Guid matchId = _battleshipService.NewGame(player1, player2);
 

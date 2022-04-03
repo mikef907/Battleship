@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -10,4 +10,12 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Battleship.WASM\Shared\Battleship.WASM.Shared.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Battleship.WASM.Shared"/>
+		<Using Include="Battleship.Game.Models"/>
+	</ItemGroup>
 </Project>

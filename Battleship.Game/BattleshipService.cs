@@ -1,5 +1,4 @@
-﻿using Battleship.Game.Models;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Battleship.Game
 {
@@ -22,6 +21,13 @@ namespace Battleship.Game
             BattleshipMatch? game = BattleshipFactory.CreateMatch(playerOne, playerTwo);
             matches.Add(game.Id, game);
             return game.Id;
+        }
+
+        public GameState GetGameState(Guid guid)
+        {
+            BattleshipMatch? match = GetMatch(guid);
+
+            return match.State;
         }
 
         public Player CurrentTurn(Guid guid)

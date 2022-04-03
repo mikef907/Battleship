@@ -1,6 +1,4 @@
-﻿using Battleship.Game.Models;
-
-namespace Battleship.Game
+﻿namespace Battleship.Game
 {
     public interface IBattleshipService
     {

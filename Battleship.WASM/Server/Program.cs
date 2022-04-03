@@ -1,4 +1,3 @@
-using Battleship.Game;
 using Battleship.WASM.Server.Hubs;
 using Battleship.WASM.Server.Services;
 using MediatR;

@@ -1,6 +1,4 @@
-﻿using Battleship.Game.Models;
-
-namespace Battleship.WASM.Server.Services
+﻿namespace Battleship.WASM.Server.Services
 {
     public class PlayerConnections
     {

@@ -1,4 +1,3 @@
-using Battleship.WASM.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Battleship.WASM.Server.Controllers

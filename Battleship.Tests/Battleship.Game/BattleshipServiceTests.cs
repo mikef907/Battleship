@@ -1,13 +1,13 @@
 ﻿namespace Battleship.Tests
 {
-    public class BattleshipServiceTests: BattleshipService
+    public class BattleshipServiceTests : BattleshipService
     {
         private readonly Player playerOne;
         private readonly Player playerTwo;
         private readonly Guid matchId;
 
         public BattleshipServiceTests()
-            : base(Substitute.ForPartsOf<BattleshipGameEngine>(Substitute.For<ILogger>()), Substitute.For<ILogger>())
+            : base(Substitute.ForPartsOf<BattleshipGameEngine>(Substitute.For<ILoggerFactory>()), Substitute.For<ILoggerFactory>())
         {
             playerOne = BattleshipFactory.CreatePlayer("PlayerOne");
             playerTwo = BattleshipFactory.CreatePlayer("PlayerTwo");
@@ -31,7 +31,7 @@
         [Fact]
         public void CheckMatchState_ShouldReturnPlayer()
         {
-            var match = matches[matchId];
+            BattleshipMatch? match = matches[matchId];
 
             engine.CheckMatchState(match).Returns(playerOne);
 
@@ -47,11 +47,11 @@
         [Fact]
         public void TryStartGame_Should_ReturnBool()
         {
-            TryStartGame(matchId, out var gamePhase).Should().BeFalse();
+            TryStartGame(matchId, out GamePhase gamePhase).Should().BeFalse();
 
             gamePhase.Should().Be(GamePhase.Setup);
 
-            var match = Substitute.For<BattleshipMatch>(playerOne, playerTwo);
+            BattleshipMatch? match = Substitute.For<BattleshipMatch>(playerOne, playerTwo);
 
             match.AllShipsPlaced.Returns(true);
 
@@ -65,8 +65,8 @@
         [Fact]
         public void TryPlaceShip_Should_ReturnBool()
         {
-            var placement = new Placement { Coordinate = new Coordinate(0, 0), Direction = Direction.Down, Owner = playerOne };
-            
+            Placement placement = new Placement { Coordinate = new Coordinate(0, 0), Direction = Direction.Down, Owner = playerOne };
+
             TryPlaceShip(matchId, placement, new Carrier(), out int shipsPlaced).Should().BeTrue();
 
             shipsPlaced.Should().Be(1);
@@ -75,7 +75,7 @@
         [Fact]
         public void FireShot_Should_ReturnResult()
         {
-            var match = new BattleshipMatch(playerOne, playerTwo);
+            BattleshipMatch? match = new BattleshipMatch(playerOne, playerTwo);
 
             match.TransitionGamePhase();
 
@@ -103,7 +103,7 @@
 
             CurrentTurn(matchId).Should().NotBeNull().And.Be(playerOne);
             FireShot(matchId, new Coordinate(0, 0), playerOne, playerTwo).Should().Be((Result.Miss, null));
-            var act = () => FireShot(matchId, new Coordinate(1, 0), playerOne, playerTwo);
+            Func<(Result, ShipName?)>? act = () => FireShot(matchId, new Coordinate(1, 0), playerOne, playerTwo);
             act.Should().Throw<InvalidOperationException>().WithMessage("Not attackers turn");
         }
     }

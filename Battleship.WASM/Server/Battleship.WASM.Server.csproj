@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -20,5 +20,9 @@
     <ProjectReference Include="..\Shared\Battleship.WASM.Shared.csproj" />
   </ItemGroup>
 
-
+	<ItemGroup>
+		<Using Include="Battleship.WASM.Shared"/>
+		<Using Include="Battleship.Game.Models"/>
+		<Using Include="Battleship.Game"/>
+	</ItemGroup>
 </Project>

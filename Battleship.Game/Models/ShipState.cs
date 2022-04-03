@@ -11,6 +11,9 @@
         }
 
         public bool IsSunk => Ship.Size == hits;
-        public void IncrementHits() => hits++;
+        public void IncrementHits()
+        {
+            hits++;
+        }
     };
 }

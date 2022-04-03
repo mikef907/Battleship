@@ -1,5 +1,4 @@
-﻿using Battleship.Game.Models;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Battleship.Game
 {

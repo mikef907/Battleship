@@ -15,10 +15,11 @@
             Id = Guid.NewGuid();
             GamePhase = GamePhase.Setup;
             State = new GameState();
-            Playerboards = new Dictionary<Player, GameBoard>();
-
-            Playerboards.Add(playerOne, new GameBoard(Size));
-            Playerboards.Add(playerTwo, new GameBoard(Size));
+            Playerboards = new Dictionary<Player, GameBoard>
+            {
+                { playerOne, new GameBoard(Size) },
+                { playerTwo, new GameBoard(Size) }
+            };
         }
 
         public Guid Id { get; init; }

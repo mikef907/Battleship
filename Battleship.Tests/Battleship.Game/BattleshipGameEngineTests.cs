@@ -11,7 +11,7 @@ namespace Battleship.Tests
 
         public BattleshipGameEngineTests()
         {
-            sut = new BattleshipGameEngine(Substitute.For<ILogger>());
+            sut = new BattleshipGameEngine(Substitute.For<ILoggerFactory>());
             playerOne = BattleshipFactory.CreatePlayer("PlayerOne");
             playerTwo = BattleshipFactory.CreatePlayer("PlayerTwo");
             game = BattleshipFactory.CreateMatch(playerOne, playerTwo);
@@ -31,20 +31,24 @@ namespace Battleship.Tests
         }
 
         [Fact]
-        public void PlaceShip_ShouldNot_AllowDuplicateShipsPerPlayer()
+        public void PlaceShip_Should_ReplaceShipsWhenAlreadyPlaced()
         {
             Placement placement = new Placement(new Coordinate(5, 5), Direction.Up, playerOne);
             Carrier? ship = new Carrier();
 
             sut.PlaceShip(game, placement, ship).Should().BeTrue();
 
-            sut.PlaceShip(game, placement, ship).Should().BeFalse();
+            sut.PlaceShip(game, placement, ship).Should().BeTrue();
 
             placement = new Placement(new Coordinate(5, 5), Direction.Right, playerOne);
 
-            sut.PlaceShip(game, placement, ship).Should().BeFalse();
+            sut.PlaceShip(game, placement, ship).Should().BeTrue();
 
             placement = new Placement(new Coordinate(1, 1), Direction.Right, playerOne);
+
+            sut.PlaceShip(game, placement, ship).Should().BeTrue();
+
+            placement = new Placement(new Coordinate(9, 1), Direction.Right, playerOne);
 
             sut.PlaceShip(game, placement, ship).Should().BeFalse();
         }
@@ -87,7 +91,7 @@ namespace Battleship.Tests
             sut.PlaceShip(game, placement, ship).Should().BeFalse();
 
             // We'll check edges by inverting our placement logic
-            var offset = ship.Size - 1;
+            int offset = ship.Size - 1;
 
             // Checks up edges
             placement = new Placement(new Coordinate(5, 5 + offset), Direction.Up, playerOne);

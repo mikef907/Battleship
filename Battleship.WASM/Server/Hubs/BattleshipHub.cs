@@ -1,6 +1,4 @@
-﻿using Battleship.Game;
-using Battleship.Game.Models;
-using Battleship.WASM.Server.Services;
+﻿using Battleship.WASM.Server.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Battleship.WASM.Server.Hubs

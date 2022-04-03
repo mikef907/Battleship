@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Battleship.Game\Battleship.Game.csproj" />
+    <ProjectReference Include="..\Battleship.WASM\Shared\Battleship.WASM.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,8 +38,9 @@
     <Using Include="Battleship.Game.Models" />
     <Using Include="FluentAssertions" />
     <Using Include="Xunit" />
-    <Using Include="NSubstitute "/>
+    <Using Include="NSubstitute " />
     <Using Include="Microsoft.Extensions.Logging" />
+	<Using Include="Battleship.WASM.Shared"/>
   </ItemGroup>
 
 </Project>
