@@ -6,10 +6,7 @@ namespace Battleship.WASM.Server.Services
     {
         private readonly IMediator _mediator;
 
-        public MatchMakingService(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
+        public MatchMakingService(IMediator mediator) => _mediator = mediator;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

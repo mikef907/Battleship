@@ -28,9 +28,11 @@ namespace Battleship.WASM.Server.Services
 
                 Guid matchId = _battleshipService.NewGame(player1, player2);
 
+                GamePhase gamePhase = _battleshipService.GetMatchPhase(matchId);
+
                 IEnumerable<string>? connections = _players.Connections.Where(_ => new[] { player1, player2 }.Contains(_.Key)).Select(_ => _.Value);
 
-                await _battleshipHub.Clients.Clients(connections).SendAsync("NotifyMatchFoundResponse", matchId, cancellationToken);
+                await _battleshipHub.Clients.Clients(connections).SendAsync("NotifyMatchFoundResponse", matchId, gamePhase, cancellationToken);
             }
         }
     }

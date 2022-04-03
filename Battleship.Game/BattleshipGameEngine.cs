@@ -6,10 +6,7 @@ namespace Battleship.Game
     {
         private readonly ILogger Logger;
 
-        public BattleshipGameEngine(ILoggerFactory loggerFactory)
-        {
-            Logger = loggerFactory.CreateLogger(nameof(BattleshipFactory));
-        }
+        public BattleshipGameEngine(ILoggerFactory loggerFactory) => Logger = loggerFactory.CreateLogger(nameof(BattleshipFactory));
 
         public (Result, ShipName?) MarkCoordinate(BattleshipMatch match, Coordinate coordinate, Player attacker, Player against)
         {

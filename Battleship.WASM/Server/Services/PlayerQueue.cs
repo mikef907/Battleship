@@ -4,9 +4,6 @@
     {
         public readonly Queue<Player> Players;
 
-        public PlayerQueue()
-        {
-            Players = new Queue<Player>();
-        }
+        public PlayerQueue() => Players = new Queue<Player>();
     }
 }

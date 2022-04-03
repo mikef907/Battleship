@@ -8,5 +8,6 @@
         Guid NewGame(Player playerOne, Player playerTwo);
         bool TryPlaceShip(Guid guid, Placement placement, IShip ship, out int shipsPlaced);
         bool TryStartGame(Guid guid, out GamePhase gamePhase);
+        GamePhase GetMatchPhase(Guid guid);
     }
 }

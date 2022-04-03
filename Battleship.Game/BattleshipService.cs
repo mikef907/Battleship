@@ -7,13 +7,13 @@ namespace Battleship.Game
         protected static IDictionary<Guid, BattleshipMatch> matches
             = new Dictionary<Guid, BattleshipMatch>();
 
-        protected readonly IBattleshipGameEngine engine;
-        private readonly ILogger logger;
+        protected readonly IBattleshipGameEngine _engine;
+        private readonly ILogger _logger;
 
         public BattleshipService(IBattleshipGameEngine engine, ILoggerFactory loggerFactory)
         {
-            this.engine = engine;
-            this.logger = loggerFactory.CreateLogger(nameof(BattleshipService));
+            _engine = engine;
+            _logger = loggerFactory.CreateLogger(nameof(BattleshipService));
         }
 
         public Guid NewGame(Player playerOne, Player playerTwo)
@@ -41,7 +41,7 @@ namespace Battleship.Game
         {
             BattleshipMatch? match = GetMatch(guid);
 
-            if (engine.CheckMatchState(match) is var player && player != null)
+            if (_engine.CheckMatchState(match) is var player && player != null)
             {
                 match.TransitionGamePhase();
                 return player;
@@ -52,10 +52,9 @@ namespace Battleship.Game
             }
         }
 
-        public int GetMaxShips(Guid guid)
-        {
-            return GetMatch(guid).NumShipsPerPlayer * 2;
-        }
+        public GamePhase GetMatchPhase(Guid guid) => GetMatch(guid).GamePhase;
+
+        public int GetMaxShips(Guid guid) => GetMatch(guid).NumShipsPerPlayer * 2;
 
         public bool TryStartGame(Guid guid, out GamePhase gamePhase)
         {
@@ -77,7 +76,7 @@ namespace Battleship.Game
         {
             BattleshipMatch? match = GetMatch(guid);
 
-            bool result = engine.PlaceShip(match, placement, ship);
+            bool result = _engine.PlaceShip(match, placement, ship);
 
             shipsPlaced = match.Playerboards.Values.Select(_ => _.Ships.Count).Sum();
 
@@ -91,7 +90,7 @@ namespace Battleship.Game
                 throw new InvalidOperationException("Not attackers turn");
             }
 
-            return engine.MarkCoordinate(GetMatch(guid), coordinate, attacker, against);
+            return _engine.MarkCoordinate(GetMatch(guid), coordinate, attacker, against);
         }
 
         private BattleshipMatch GetMatch(Guid guid)
@@ -102,7 +101,7 @@ namespace Battleship.Game
             }
 
             MatchNotFoundException? exception = new MatchNotFoundException();
-            logger.LogError(exception, guid.ToString());
+            _logger.LogError(exception, guid.ToString());
             throw exception;
         }
     }

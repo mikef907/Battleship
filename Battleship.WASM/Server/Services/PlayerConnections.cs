@@ -4,9 +4,6 @@
     {
         public readonly IDictionary<Player, string> Connections;
 
-        public PlayerConnections()
-        {
-            Connections = new Dictionary<Player, string>();
-        }
+        public PlayerConnections() => Connections = new Dictionary<Player, string>();
     }
 }

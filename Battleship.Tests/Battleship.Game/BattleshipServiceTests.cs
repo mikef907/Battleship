@@ -23,26 +23,20 @@
         }
 
         [Fact]
-        public void CheckMatchState_ShouldReturnNull()
-        {
-            CheckMatchState(matchId).Should().BeNull();
-        }
+        public void CheckMatchState_ShouldReturnNull() => CheckMatchState(matchId).Should().BeNull();
 
         [Fact]
         public void CheckMatchState_ShouldReturnPlayer()
         {
             BattleshipMatch? match = matches[matchId];
 
-            engine.CheckMatchState(match).Returns(playerOne);
+            _engine.CheckMatchState(match).Returns(playerOne);
 
             CheckMatchState(matchId).Should().Be(playerOne);
         }
 
         [Fact]
-        public void GetMaxShips_Should_ReturnIntGreaterThanZero()
-        {
-            GetMaxShips(matchId).Should().BeGreaterThan(0);
-        }
+        public void GetMaxShips_Should_ReturnIntGreaterThanZero() => GetMaxShips(matchId).Should().BeGreaterThan(0);
 
         [Fact]
         public void TryStartGame_Should_ReturnBool()

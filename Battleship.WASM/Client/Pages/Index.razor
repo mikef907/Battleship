@@ -8,6 +8,10 @@
 <PageTitle>Index</PageTitle>
 <div class="container">
     <h1>Battleship!</h1>
+    @if (gamePhase.HasValue)
+    {
+        <h5>Game Phase: @gamePhase.Value</h5>
+    }
 
     @if (!currentMatchId.HasValue)
     {
@@ -66,7 +70,7 @@
 @code {
     private HubConnection? hubConnection;
     private List<string> messages = new List<string>();
-
+    private GamePhase? gamePhase;
     private Guid? currentMatchId;
     private bool isQueued = false;
 
@@ -93,10 +97,11 @@
             Console.WriteLine(player);
         });
 
-        hubConnection.On<Guid>("NotifyMatchFoundResponse", (matchId) =>
+        hubConnection.On<Guid, GamePhase>("NotifyMatchFoundResponse", (matchId, phase) =>
         {
             Console.WriteLine($"Match found {matchId}");
             currentMatchId = matchId;
+            gamePhase = phase;   
             StateHasChanged();
         });
 
