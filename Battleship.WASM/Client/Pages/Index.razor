@@ -34,11 +34,28 @@
     }
     else
     {
-        <div class="game-grid">
-            @for (var i = 0; i < 100; i++)
-            {
-                <div id="@i" class="game-grid-cell">X</div>
-            }
+        <div>
+            <div class="game-grid">
+                @for (var i = 0; i < 10; i++)
+                {
+                    @for (var j = 0; j < 10; j++)
+                    {
+                        var _i = i;
+                        var _j = j;
+                        var cellState = GetPlayerCellState(_i, _j);
+
+                        <div dropzone="ships" id="@i-@j" class="game-grid-cell">
+                            @if (cellState.Item2 is not null)
+                            {
+                                <div draggable title="@cellState.Item2?.Name" class="ship @cellState.Item2?.Name" 
+                                    @onmousedown="() => SelectShip(_i, _j)" 
+                                    @ondragstart="() => DragShipStart()">
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
         </div>
     }
 
@@ -52,28 +69,47 @@
         max-width: 40rem;
     }
 
+    .ship {
+        height:100%;
+        width: 100%;
+    }
+
     .game-grid-cell {
         border-style: groove;
         border-width: 1px;
     }
 
-    .hit {
+    .ship.Carrier {
+        background-color: #ffbe0b;
     }
 
-    .miss {
+    .ship.Battleship {
+        background-color: #fb5607;
     }
 
-    .ship {
+    .ship.Patrol_Boat {
+        background-color: #ff006e;
+    }
+
+    .ship.Submarine {
+        background-color: #8338ec;
+    }
+
+    .ship.Destroyer {
+        background-color: #3a86ff;
     }
 </style>
 
 @code {
     private HubConnection? hubConnection;
+    private Player player;
+    private IShip? currentSelected;
     private List<string> messages = new List<string>();
     private GamePhase? gamePhase;
     private Guid? currentMatchId;
     private bool isQueued = false;
-
+    private IShip?[,] playerGrid = new IShip?[10, 10];
+    private IShip[] playerShips = new IShip[] { new Carrier(), new Battleship(), new Patrol_Boat(), new Submarine(), new Destroyer() };
     private string? userInput;
     private string? messageInput;
     private string? username;
@@ -94,6 +130,7 @@
 
         hubConnection.On<Player>("JoinQueueResponse", (player) =>
         {
+            this.player = player;
             Console.WriteLine(player);
         });
 
@@ -101,11 +138,47 @@
         {
             Console.WriteLine($"Match found {matchId}");
             currentMatchId = matchId;
-            gamePhase = phase;   
+            gamePhase = phase;
             StateHasChanged();
         });
 
         await hubConnection.StartAsync();
+
+        InitBoard();
+    }
+
+    private void DragShipStart()
+    {
+
+    }
+
+
+    private void InitBoard()
+    {
+        for (var i = 0; i < playerShips.Length; i++)
+        {
+            var placement = new Placement(new Coordinate(i, 0), Direction.Down, player);
+            var coords = BattleshipHelpers.BuildWriteCoordinates(placement, playerShips[i]);
+
+            foreach (var coord in coords)
+            {
+                playerGrid[coord.X, coord.Y] = playerShips[i];
+            }
+        }
+    }
+
+    private void SelectShip(int i, int j)
+    {
+        currentSelected = playerGrid[i, j];
+
+        Console.WriteLine($"Select ship {i}, {j} {currentSelected}");
+    }
+
+    private (string, IShip?) GetPlayerCellState(int i, int j)
+    {
+        IShip? ship = playerGrid[i, j];
+
+        return (ship is null ? "bg-light" : "bg-secondary", ship);
     }
 
     private async Task Send()

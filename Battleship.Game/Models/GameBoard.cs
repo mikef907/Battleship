@@ -1,6 +1,5 @@
 ﻿namespace Battleship.Game.Models
 {
-    public readonly record struct Placement(Coordinate Coordinate, Direction Direction, Player Owner);
 
     public record GameBoard
     {

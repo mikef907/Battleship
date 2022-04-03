@@ -1,4 +1,4 @@
-﻿namespace Battleship.Game
+﻿namespace Battleship.WASM.Shared
 {
     public enum Direction
     {

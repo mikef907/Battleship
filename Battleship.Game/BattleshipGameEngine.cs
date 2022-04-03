@@ -84,7 +84,7 @@ namespace Battleship.Game
                         replacementCoordinates = board.RemoveShipPlacement(ship.Name);
                     }
 
-                    List<Coordinate> writeCoordinates = BuildWriteCoordinates(placement, ship, coordinate);
+                    List<Coordinate> writeCoordinates = BattleshipHelpers.BuildWriteCoordinates(placement, ship);
 
                     if (!board.WriteShipPlacement(writeCoordinates, ship.Name))
                     {
@@ -108,41 +108,6 @@ namespace Battleship.Game
                 Logger.LogError(exception: ex, message: "Error Placing Ship");
                 throw;
             }
-        }
-
-        private static List<Coordinate> BuildWriteCoordinates(Placement placement, IShip ship, Coordinate coordinate)
-        {
-            List<Coordinate>? writeCoordinates = new List<Coordinate>();
-
-            switch (placement.Direction)
-            {
-                case Direction.Up:
-                    for (int i = 0; i < ship.Size; i++)
-                    {
-                        writeCoordinates.Add(new Coordinate(coordinate.X, coordinate.Y - i));
-                    }
-                    break;
-                case Direction.Down:
-                    for (int i = 0; i < ship.Size; i++)
-                    {
-                        writeCoordinates.Add(new Coordinate(coordinate.X, coordinate.Y + i));
-                    }
-                    break;
-                case Direction.Right:
-                    for (int i = 0; i < ship.Size; i++)
-                    {
-                        writeCoordinates.Add(new Coordinate(coordinate.X + i, coordinate.Y));
-                    }
-                    break;
-                case Direction.Left:
-                    for (int i = 0; i < ship.Size; i++)
-                    {
-                        writeCoordinates.Add(new Coordinate(coordinate.X - i, coordinate.Y));
-                    }
-                    break;
-            }
-
-            return writeCoordinates;
         }
     }
 }

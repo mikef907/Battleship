@@ -30,6 +30,13 @@ namespace Battleship.WASM.Server.Hubs
             }
             else
             {
+#if DEBUG
+                // Allows me to test this through a single browser instance
+                Player player2 = BattleshipFactory.CreatePlayer("TESTPLAYER2");
+                _players.Connections.Add(player2, "TESTPLAYER2");
+                _playerQueue.Players.Enqueue(player2);
+#endif
+
                 player = BattleshipFactory.CreatePlayer(username);
                 _players.Connections.Add(player, Context.ConnectionId);
             }
