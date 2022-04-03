@@ -2,8 +2,6 @@
 {
     public readonly record struct Placement(Coordinate Coordinate, Direction Direction, Player Owner);
 
-    public readonly record struct Coordinate(int X, int Y);
-
     public record GameBoard
     {
         private readonly int Size;
