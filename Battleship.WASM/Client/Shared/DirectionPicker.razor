@@ -1,0 +1,76 @@
+﻿<div class="modal" style="display:unset;" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Choose Ship Direction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="OnCloseDirectionPicker"></button>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-outline-primary" disabled="@(!validDirections[Direction.Up])" @onclick="() => SetDirection(Direction.Up)">Up</button>
+                <button class="btn btn-outline-primary" disabled="@(!validDirections[Direction.Down])"  @onclick="() => SetDirection(Direction.Down)">Down</button>
+                <button class="btn btn-outline-primary" disabled="@(!validDirections[Direction.Left])"  @onclick="() => SetDirection(Direction.Left)">Left</button>
+                <button class="btn btn-outline-primary" disabled="@(!validDirections[Direction.Right])"  @onclick="() => SetDirection(Direction.Right)">Right</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="OnCloseDirectionPicker">Cancel</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnCloseDirectionPicker { get; set; }
+    [Parameter] public EventCallback<Direction> OnDirectionChoosen { get; set; }
+    [Parameter] public IShip Target { get; set; }
+    [Parameter] public Coordinate Coordinate { get; set; }
+    [Parameter] public IShip?[,] PlayerGrid { get; set; }
+    private Dictionary<Direction, bool> validDirections;
+
+    protected override void OnInitialized()
+    {
+        validDirections = new();
+        validDirections.Add(Direction.Up, false);
+        validDirections.Add(Direction.Down, false);
+        validDirections.Add(Direction.Left, false);
+        validDirections.Add(Direction.Right, false);
+    }
+
+    protected override void OnParametersSet()
+    {
+        for (int i = 0; i < validDirections.Count; i++)
+        {
+            var direction = validDirections.ElementAt(i).Key;
+            var placement = new Placement(Coordinate, direction, new Player());
+            Console.WriteLine(placement);
+            var coords = BattleshipHelpers.BuildWriteCoordinates(placement, Target);
+
+            foreach (var coord in coords)
+            {
+                // Bounds check
+                if (coord.X >= 10 || coord.Y >= 10
+                    || coord.X < 0 || coord.Y < 0)
+                {
+                    validDirections[direction] = false;
+                    break;
+                }
+                // Ship overlap check
+                else if (PlayerGrid[coord.X, coord.Y] != null && PlayerGrid[coord.X, coord.Y] != Target)
+                {
+                    validDirections[direction] = false;
+                    break;
+                }
+                else
+                {
+                    validDirections[direction] = true;
+                }
+            }
+        }
+    }
+
+    public async Task SetDirection(Direction direction)
+    {
+
+        await OnDirectionChoosen.InvokeAsync(direction);
+    }
+}

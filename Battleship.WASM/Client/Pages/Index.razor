@@ -35,37 +35,18 @@
     else
     {
         <div>
-            <div class="game-grid">
-                @for (var i = 0; i < 10; i++)
-                {
-                    @for (var j = 0; j < 10; j++)
-                    {
-                        var _i = i;
-                        var _j = j;
-                        var cellState = GetPlayerCellState(_i, _j);
-
-                        <div dropzone="ships" id="@i-@j" class="game-grid-cell">
-                            @if (cellState.Item2 is not null)
-                            {
-                                <div draggable title="@cellState.Item2?.Name" class="ship @cellState.Item2?.Name" 
-                                    @onmousedown="() => SelectShip(_i, _j)" 
-                                    @ondragstart="() => DragShipStart()">
-                                </div>
-                            }
-                        </div>
-                    }
-                }
-            </div>
+           <Gameboard Player="player" />
         </div>
     }
 
 </div>
 
+
 <style>
     .game-grid {
         display: grid;
         grid-template-columns: repeat(10, 1fr);
-        grid-auto-rows: 3rem;
+        grid-auto-rows: 4rem;
         max-width: 40rem;
     }
 
@@ -77,6 +58,17 @@
     .game-grid-cell {
         border-style: groove;
         border-width: 1px;
+        height:100%;
+        width: 100%;
+        z-index: 20;
+    }
+
+    .can-drop {
+        border: 2px dotted green!important;
+    }
+
+    .no-drop {
+        border: 2px dotted red!important;
     }
 
     .ship.Carrier {
@@ -103,13 +95,11 @@
 @code {
     private HubConnection? hubConnection;
     private Player player;
-    private IShip? currentSelected;
     private List<string> messages = new List<string>();
     private GamePhase? gamePhase;
     private Guid? currentMatchId;
     private bool isQueued = false;
-    private IShip?[,] playerGrid = new IShip?[10, 10];
-    private IShip[] playerShips = new IShip[] { new Carrier(), new Battleship(), new Patrol_Boat(), new Submarine(), new Destroyer() };
+
     private string? userInput;
     private string? messageInput;
     private string? username;
@@ -143,42 +133,6 @@
         });
 
         await hubConnection.StartAsync();
-
-        InitBoard();
-    }
-
-    private void DragShipStart()
-    {
-
-    }
-
-
-    private void InitBoard()
-    {
-        for (var i = 0; i < playerShips.Length; i++)
-        {
-            var placement = new Placement(new Coordinate(i, 0), Direction.Down, player);
-            var coords = BattleshipHelpers.BuildWriteCoordinates(placement, playerShips[i]);
-
-            foreach (var coord in coords)
-            {
-                playerGrid[coord.X, coord.Y] = playerShips[i];
-            }
-        }
-    }
-
-    private void SelectShip(int i, int j)
-    {
-        currentSelected = playerGrid[i, j];
-
-        Console.WriteLine($"Select ship {i}, {j} {currentSelected}");
-    }
-
-    private (string, IShip?) GetPlayerCellState(int i, int j)
-    {
-        IShip? ship = playerGrid[i, j];
-
-        return (ship is null ? "bg-light" : "bg-secondary", ship);
     }
 
     private async Task Send()

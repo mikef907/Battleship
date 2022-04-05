@@ -1,0 +1,78 @@
+﻿<CascadingValue Value="this">
+    <div class="game-grid">
+        @for (var i = 0; i < 10; i++)
+        {
+            @for (var j = 0; j < 10; j++)
+            {
+                var _i = i;
+                var _j = j;
+                <ShipCell X="_i" Y="_j" ShipModel="playerGrid[_i, _j]" OnDropUpdate="HandleOnDropUpdate"></ShipCell>
+            }
+        }
+    </div>
+</CascadingValue>
+
+@if (CurrentSelected is not null)
+{
+    <DirectionPicker OnCloseDirectionPicker="HandleDirectionPickerClose" OnDirectionChoosen="HandleDirectionPicked" PlayerGrid="playerGrid" Coordinate="dropCoordinate.Value" Target="CurrentSelected" />
+}
+
+@code {
+    [Parameter] public Player Player { get; set; }
+    public IShip? CurrentSelected { get; set; }
+    private Coordinate? dropCoordinate { get; set; }
+    private IShip?[,] playerGrid = new IShip?[10, 10];
+    private IShip[] playerShips = new IShip[] { new Carrier(), new BattleShip(), new Patrol_Boat(), new Submarine(), new Destroyer() };
+
+    protected override void OnInitialized()
+    {
+        InitBoard();
+    }
+
+    public void HandleDirectionPickerClose()
+    {
+        dropCoordinate = null;
+        CurrentSelected = null;
+    }
+
+    public void HandleDirectionPicked(Direction direction)
+    {
+        var placement = new Placement(dropCoordinate!.Value, direction, Player);
+
+        var coords = BattleshipHelpers.BuildWriteCoordinates(placement, CurrentSelected!);
+
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 10; j++)
+                if (playerGrid[i, j] == CurrentSelected)
+                    playerGrid[i, j] = null;
+
+        foreach (var coord in coords)
+        {
+            playerGrid[coord.X, coord.Y] = CurrentSelected;
+        }
+
+        CurrentSelected = null;
+        dropCoordinate = null;
+    }
+
+    public void HandleOnDropUpdate(Coordinate coordinate)
+    {
+        dropCoordinate = coordinate;
+        StateHasChanged();
+        Console.WriteLine($"On Drop {CurrentSelected}");
+    }
+
+    private void InitBoard()
+    {
+        for (var i = 0; i < playerShips.Length; i++)
+        {
+            var placement = new Placement(new Coordinate(0, i), Direction.Down, Player);
+            var coords = BattleshipHelpers.BuildWriteCoordinates(placement, playerShips[i]);
+
+            foreach (var coord in coords)
+            {
+                playerGrid[coord.X, coord.Y] = playerShips[i];
+            }
+        }
+    }
+}

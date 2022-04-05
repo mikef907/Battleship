@@ -1,0 +1,17 @@
+﻿
+<div draggable title="@ShipModel.Name" class="ship @ShipModel.Name"
+    @ondragstart="() => DragShipStart()">
+</div>
+
+@code {
+    [Parameter] public IShip? ShipModel { get; set; }
+    [CascadingParameter] protected Gameboard gameboard { get; set; }
+
+    private void DragShipStart()
+    {
+        Console.WriteLine($"{ShipModel} drag start");
+        gameboard.CurrentSelected = ShipModel;
+        Console.WriteLine($"Current Selected {gameboard.CurrentSelected}");
+        StateHasChanged();
+    }
+}

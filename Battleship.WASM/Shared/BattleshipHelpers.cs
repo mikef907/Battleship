@@ -2,7 +2,6 @@
 {
     public static class BattleshipHelpers
     {
-
         public static List<Coordinate> BuildWriteCoordinates(Placement placement, IShip ship)
         {
             List<Coordinate>? writeCoordinates = new List<Coordinate>();

@@ -9,11 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Battleship.Game", "Battlesh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Battleship.Tests", "Battleship.Tests\Battleship.Tests.csproj", "{356F53A6-F914-4AB0-8132-2A7E3B5A2531}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Battleship.WASM.Server", "Battleship.WASM\Server\Battleship.WASM.Server.csproj", "{2BBAFF4E-0E76-43BC-B97A-B88A49B9C17C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Battleship.WASM.Server", "Battleship.WASM\Server\Battleship.WASM.Server.csproj", "{2BBAFF4E-0E76-43BC-B97A-B88A49B9C17C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Battleship.WASM.Client", "Battleship.WASM\Client\Battleship.WASM.Client.csproj", "{795F05AB-F3B2-4E94-832E-8DEFE88CE099}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Battleship.WASM.Client", "Battleship.WASM\Client\Battleship.WASM.Client.csproj", "{795F05AB-F3B2-4E94-832E-8DEFE88CE099}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Battleship.WASM.Shared", "Battleship.WASM\Shared\Battleship.WASM.Shared.csproj", "{B861A168-72FC-413F-B2CA-D3401CAE681C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Battleship.WASM.Shared", "Battleship.WASM\Shared\Battleship.WASM.Shared.csproj", "{B861A168-72FC-413F-B2CA-D3401CAE681C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
