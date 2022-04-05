@@ -45,26 +45,28 @@
             Console.WriteLine(placement);
             var coords = BattleshipHelpers.BuildWriteCoordinates(placement, Target);
 
-            foreach (var coord in coords)
-            {
-                // Bounds check
-                if (coord.X >= 10 || coord.Y >= 10
-                    || coord.X < 0 || coord.Y < 0)
-                {
-                    validDirections[direction] = false;
-                    break;
-                }
-                // Ship overlap check
-                else if (PlayerGrid[coord.X, coord.Y] != null && PlayerGrid[coord.X, coord.Y] != Target)
-                {
-                    validDirections[direction] = false;
-                    break;
-                }
-                else
-                {
-                    validDirections[direction] = true;
-                }
-            }
+            validDirections[direction] = coords.All(_ => BattleshipHelpers.CheckShipPlacement(_, PlayerGrid, Target));
+
+            //foreach (var coord in coords)
+            //{
+            //    // Bounds check
+            //    if (coord.X >= 10 || coord.Y >= 10
+            //        || coord.X < 0 || coord.Y < 0)
+            //    {
+            //        validDirections[direction] = false;
+            //        break;
+            //    }
+            //    // Ship overlap check
+            //    else if (PlayerGrid[coord.X, coord.Y] != null && PlayerGrid[coord.X, coord.Y] != Target)
+            //    {
+            //        validDirections[direction] = false;
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        validDirections[direction] = true;
+            //    }
+            //}
         }
     }
 

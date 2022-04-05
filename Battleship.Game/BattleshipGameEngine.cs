@@ -81,18 +81,18 @@ namespace Battleship.Game
                     if (_current.Value is not null)
                     {
                         board.Ships.Remove(_current.Key);
-                        replacementCoordinates = board.RemoveShipPlacement(ship.Name);
+                        replacementCoordinates = board.RemoveShipPlacement(ship);
                     }
 
                     List<Coordinate> writeCoordinates = BattleshipHelpers.BuildWriteCoordinates(placement, ship);
 
-                    if (!board.WriteShipPlacement(writeCoordinates, ship.Name))
+                    if (!board.WriteShipPlacement(writeCoordinates, ship))
                     {
                         // Replace current if it already was present
                         if (_current.Value is not null && replacementCoordinates is not null)
                         {
                             board.Ships.Add(_current.Key, _current.Value);
-                            board.WriteShipPlacement(replacementCoordinates, ship.Name);
+                            board.WriteShipPlacement(replacementCoordinates, ship);
                         }
 
                         return false;

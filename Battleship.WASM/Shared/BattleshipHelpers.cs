@@ -36,5 +36,24 @@
 
             return writeCoordinates;
         }
+
+        public static bool CheckShipPlacement(Coordinate coordinate, IShip?[,] gameboard, IShip target, int Size = 10)
+        {
+            // Bounds check
+            if (coordinate.X >= Size || coordinate.Y >= Size
+                || coordinate.X < 0 || coordinate.Y < 0)
+            {
+                return false;
+            }
+            // Ship overlap check
+            else if (gameboard[coordinate.X, coordinate.Y] != null && gameboard[coordinate.X, coordinate.Y]?.Name != target.Name)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }
