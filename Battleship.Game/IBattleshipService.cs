@@ -9,5 +9,7 @@
         bool TryPlaceShip(Guid guid, Placement placement, IShip ship, out int shipsPlaced);
         bool TryStartGame(Guid guid, out GamePhase gamePhase);
         GamePhase GetMatchPhase(Guid guid);
+        IEnumerable<Player> GetPlayers(Guid guid);
+        Player GetCurrentTurn(Guid guid);
     }
 }

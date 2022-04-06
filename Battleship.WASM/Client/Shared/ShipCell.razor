@@ -1,5 +1,5 @@
 ﻿
-<div dropzone="ships" id="@X-@Y" class="game-grid-cell @dropClass"
+<div draggable="false" id="@X-@Y" class="game-grid-cell @dropClass"
      ondragover="event.preventDefault();"
      ondragstart="event.dataTransfer.setData('', event.target.id);"
      @ondrop="HandleDrop"

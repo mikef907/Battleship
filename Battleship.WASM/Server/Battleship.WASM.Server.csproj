@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="6.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
@@ -21,8 +23,8 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<Using Include="Battleship.WASM.Shared"/>
-		<Using Include="Battleship.Game.Models"/>
-		<Using Include="Battleship.Game"/>
+		<Using Include="Battleship.WASM.Shared" />
+		<Using Include="Battleship.Game.Models" />
+		<Using Include="Battleship.Game" />
 	</ItemGroup>
 </Project>

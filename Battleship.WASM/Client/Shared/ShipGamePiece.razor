@@ -1,5 +1,5 @@
 ﻿
-<div draggable title="@ShipModel.Name" class="ship @ShipModel.Name"
+<div draggable="true" title="@ShipModel.Name" class="ship @ShipModel.Name"
     @ondragstart="() => DragShipStart()">
 </div>
 
@@ -12,6 +12,5 @@
         Console.WriteLine($"{ShipModel} drag start");
         gameboard.CurrentSelected = ShipModel;
         Console.WriteLine($"Current Selected {gameboard.CurrentSelected}");
-        StateHasChanged();
     }
 }

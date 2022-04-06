@@ -4,13 +4,13 @@ using MediatR;
 using Microsoft.AspNetCore.ResponseCompression;
 using Serilog;
 
-var builder = WebApplication
+WebApplicationBuilder? builder = WebApplication
     .CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console().CreateLogger();
 
-var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
+ILoggerFactory? loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
 
 
 // Add services to the container.
@@ -33,7 +33,7 @@ builder.Services.AddResponseCompression(opts =>
         new[] { "application/octet-stream" });
 });
 
-var app = builder.Build();
+WebApplication? app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

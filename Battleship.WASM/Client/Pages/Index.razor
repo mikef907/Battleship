@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Battleship.WASM.Client.Models
 @using Battleship.WASM.Shared
 
 @inject NavigationManager NavigationManager
@@ -8,12 +9,12 @@
 <PageTitle>Index</PageTitle>
 <div class="container">
     <h1>Battleship!</h1>
-    @if (gamePhase.HasValue)
+    @if (currentMatchInfo.GamePhase.HasValue)
     {
-        <h5>Game Phase: @gamePhase.Value</h5>
+        <h5>Game Phase: @currentMatchInfo.GamePhase</h5>
     }
 
-    @if (!currentMatchId.HasValue)
+    @if (!currentMatchInfo.MatchId.HasValue)
     {
         <div>
             <input @bind="username" placeholder="Username" /><button @onclick="JoinQueue" disabled="@(!IsConnected || isQueued)">Join Queue</button>
@@ -34,9 +35,9 @@
     }
     else
     {
-        <div>
-           <Gameboard Player="player" />
-        </div>
+        <CascadingValue Value="@currentMatchInfo">
+            <Gameboard HubConnection="hubConnection" />
+        </CascadingValue>
     }
 
 </div>
@@ -51,24 +52,25 @@
     }
 
     .ship {
-        height:100%;
+        height: 100%;
         width: 100%;
+        border-radius: 30px;
     }
 
     .game-grid-cell {
         border-style: groove;
         border-width: 1px;
-        height:100%;
+        height: 100%;
         width: 100%;
         z-index: 20;
     }
 
     .can-drop {
-        border: 2px dotted green!important;
+        border: 2px dotted green !important;
     }
 
     .no-drop {
-        border: 2px dotted red!important;
+        border: 2px dotted red !important;
     }
 
     .ship.Carrier {
@@ -93,11 +95,11 @@
 </style>
 
 @code {
+    public CurrentMatchInfo currentMatchInfo = new CurrentMatchInfo();
     private HubConnection? hubConnection;
-    private Player player;
+
     private List<string> messages = new List<string>();
-    private GamePhase? gamePhase;
-    private Guid? currentMatchId;
+
     private bool isQueued = false;
 
     private string? userInput;
@@ -120,15 +122,15 @@
 
         hubConnection.On<Player>("JoinQueueResponse", (player) =>
         {
-            this.player = player;
+            currentMatchInfo.Player = player;
             Console.WriteLine(player);
         });
 
         hubConnection.On<Guid, GamePhase>("NotifyMatchFoundResponse", (matchId, phase) =>
         {
             Console.WriteLine($"Match found {matchId}");
-            currentMatchId = matchId;
-            gamePhase = phase;
+            currentMatchInfo.MatchId = matchId;
+            currentMatchInfo.GamePhase = phase;
             StateHasChanged();
         });
 
@@ -152,6 +154,8 @@
             await hubConnection.SendAsync("JoinQueue", username);
         }
     }
+
+
 
     public bool IsConnected =>
         hubConnection?.State == HubConnectionState.Connected;

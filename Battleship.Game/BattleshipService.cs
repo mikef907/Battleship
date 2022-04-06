@@ -104,5 +104,9 @@ namespace Battleship.Game
             _logger.LogError(exception, guid.ToString());
             throw exception;
         }
+
+        public IEnumerable<Player> GetPlayers(Guid guid) => GetMatch(guid).Playerboards.Select(_ => _.Key);
+
+        public Player GetCurrentTurn(Guid guid) => GetMatch(guid).State.CurrentTurn;
     }
 }
