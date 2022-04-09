@@ -8,7 +8,7 @@ namespace Battleship.Game
 
         public BattleshipGameEngine(ILoggerFactory loggerFactory) => Logger = loggerFactory.CreateLogger(nameof(BattleshipFactory));
 
-        public (Result, ShipName?) MarkCoordinate(BattleshipMatch match, Coordinate coordinate, Player attacker, Player against)
+        public (Result, ShipName?) MarkCoordinate(BattleshipMatch match, Coordinate coordinate, Player attacker)
         {
             try
             {
@@ -21,6 +21,8 @@ namespace Battleship.Game
                 {
                     throw new InvalidOperationException("Move would be duplicate");
                 }
+
+                Player against = match.Playerboards.Single(_ => _.Key != attacker).Key;
 
                 (Result, ShipName?) results = match.Playerboards[against].CheckForHit(coordinate);
 

@@ -1,12 +1,12 @@
-﻿@using Battleship.WASM.Client.Models
-@using Newtonsoft.Json
-<CascadingValue Value="this">
+﻿<CascadingValue Value="this">
     <div draggable="false" class="game-grid">
         @for (var i = 0; i < 10; i++)
         {
             @for (var j = 0; j < 10; j++)
             {
-                <ShipCell X="i" Y="j" ShipModel="playerGrid[i, j]" OnDropUpdate="HandleOnDropUpdate"></ShipCell>
+                <ShipCell Coordinate="new Coordinate(i, j)" ShipModel="playerGrid[i, j]" OnDropUpdate="HandleOnDropUpdate">
+                    
+                </ShipCell>
             }
         }
     </div>
@@ -17,9 +17,38 @@
     <button class="btn btn-outline-primary" @onclick="StartGame">Start Game</button>
 }
 
+@if (waitingForPlayer)
+{
+    <p>
+        Waiting for opponent...
+
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </p>
+}
+
 @if (CurrentSelected is not null)
 {
     <DirectionPicker OnCloseDirectionPicker="HandleDirectionPickerClose" OnDirectionChoosen="HandleDirectionPicked" PlayerGrid="playerGrid" Coordinate="dropCoordinate.Value" Target="CurrentSelected" />
+}
+
+<hr />
+
+@if (currentMatchInfo.GamePhase == GamePhase.Main && !waitingForPlayer)
+{
+    <p>@(currentMatchInfo.CurrentTurn == currentMatchInfo.Player ? "Your Turn" : "Opponent's Turn")</p>
+    <div draggable="false" class="game-grid opponent">
+        @for (var i = 0; i < 10; i++)
+        {
+            @for (var j = 0; j < 10; j++)
+            {
+                <ResultCell Result="resultGrid[i,j]" Coordinate="new Coordinate(i, j)" ShootCallback="HandleShootCallback" />
+            }
+        }
+    </div>
 }
 
 @code {
@@ -28,7 +57,11 @@
     public IShip? CurrentSelected { get; set; }
     private Coordinate? dropCoordinate { get; set; }
     private IShip?[,] playerGrid = new IShip?[10, 10];
+    private Result?[,] resultGrid = new Result?[10, 10];
     private IDictionary<IShip, Placement?> playerShips;
+    public IEnumerable<ValueTuple<Player, Coordinate, Result, ShipName?>> Moves
+        = Enumerable.Empty<ValueTuple<Player, Coordinate, Result, ShipName?>>();
+    private bool waitingForPlayer { get; set; } = false;
 
     protected override void OnInitialized()
     {
@@ -39,6 +72,34 @@
         playerShips.Add(new Submarine(), null);
         playerShips.Add(new Destroyer(), null);
         InitBoard();
+
+        HubConnection.On<Player?>("NotifyGameStarted", currentPlayerTurn =>
+        {
+            if (currentPlayerTurn is not null)
+            {
+                waitingForPlayer = false;
+                currentMatchInfo.GamePhase = GamePhase.Main;
+            }
+            else
+            {
+                waitingForPlayer = true;
+            }
+
+            currentMatchInfo.CurrentTurn = currentPlayerTurn;
+            StateHasChanged();
+        });
+
+        HubConnection.On<Player, IEnumerable<ValueTuple<Player, Coordinate, Result, ShipName?>>>("NotifyShotResult", (playerAttacked, moves) =>
+        {
+            Moves = moves;
+            currentMatchInfo.CurrentTurn = playerAttacked;
+            StateHasChanged();
+        });
+    }
+
+    public void HandleShootCallback(Coordinate coordinate)
+    {
+        HubConnection.InvokeAsync("Shoot", currentMatchInfo, coordinate);
     }
 
     public void HandleDirectionPickerClose()

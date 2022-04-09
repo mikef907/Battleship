@@ -32,27 +32,35 @@ namespace Battleship.WASM.Server.Hubs
             }
             else
             {
-#if DEBUG
-                // Allows me to test this through a single browser instance
-                Player player2 = BattleshipFactory.CreatePlayer("TESTPLAYER2");
-                _players.Connections.Add(player2, "TESTPLAYER2");
-                _playerQueue.Players.Enqueue(player2);
-#endif
-
                 player = BattleshipFactory.CreatePlayer(username);
                 _players.Connections.Add(player, Context.ConnectionId);
             }
 
             _playerQueue.Players.Enqueue(player);
+#if DEBUG
+            // Allows me to test this through a single browser instance
+            Player player2 = BattleshipFactory.CreatePlayer("TESTPLAYER2");
+            _players.Connections.Add(player2, "TESTPLAYER2");
+            _playerQueue.Players.Enqueue(player2);
+#endif
 
             await Clients.Caller.SendAsync("JoinQueueResponse", player, cancellationTokenSource.Token);
         }
 
         public async Task StartGame(Guid matchId, IDictionary<ShipName, Placement> playerShips)
         {
+#if DEBUG
+            // Easy setup for both sides, the will mirror eachout
+            Player opponent = _players.Connections.First(_ => _.Key.Username == "TESTPLAYER2").Key;
             foreach (KeyValuePair<ShipName, Placement> ship in playerShips)
             {
-                if (_battleshipService.TryPlaceShip(matchId, ship.Value, BattleshipFactory.CreateShip(ship.Key)!, out int placed) && placed == 5)
+                _battleshipService.TryPlaceShip(matchId, new Placement(ship.Value.Coordinate, ship.Value.Direction, opponent), BattleshipFactory.CreateShip(ship.Key)!, out int placed);
+            }
+#endif
+
+            foreach (KeyValuePair<ShipName, Placement> ship in playerShips)
+            {
+                if (_battleshipService.TryPlaceShip(matchId, ship.Value, BattleshipFactory.CreateShip(ship.Key)!, out int placed) && placed == 10)
                 {
                     if (_battleshipService.TryStartGame(matchId, out GamePhase gamePhase))
                     {
@@ -63,9 +71,35 @@ namespace Battleship.WASM.Server.Hubs
                             Player currentTurn = _battleshipService.GetCurrentTurn(matchId);
 
                             await Clients.Client(connection).SendAsync("NotifyGameStarted", currentTurn);
+
+                            return;
                         }
                     }
                 }
+
+            }
+
+            foreach (Player player in _battleshipService.GetPlayers(matchId))
+            {
+                string? connection = _players.Connections[player];
+
+                await Clients.Client(connection).SendAsync("NotifyGameStarted", null);
+            }
+        }
+
+        public async Task Shoot(CurrentMatchInfo currentMatchInfo, Coordinate coordinate)
+        {
+            Guid matchId = currentMatchInfo.MatchId!.Value;
+
+            (Result, ShipName?) results = _battleshipService.FireShot(matchId, coordinate, currentMatchInfo.Player);
+
+            Player currentTurn = _battleshipService.GetCurrentTurn(matchId);
+
+            foreach (Player player in _battleshipService.GetPlayers(matchId))
+            {
+                string? connection = _players.Connections[player];
+
+                await Clients.Client(connection).SendAsync("NotifyShotResult", currentTurn, _battleshipService.Moves(matchId));
             }
         }
     }

@@ -3,7 +3,7 @@
     public interface IBattleshipService
     {
         Player? CheckMatchState(Guid guid);
-        (Result, ShipName?) FireShot(Guid guid, Coordinate coordinate, Player attacker, Player against);
+        (Result, ShipName?) FireShot(Guid guid, Coordinate coordinate, Player attacker);
         int GetMaxShips(Guid guid);
         Guid NewGame(Player playerOne, Player playerTwo);
         bool TryPlaceShip(Guid guid, Placement placement, IShip ship, out int shipsPlaced);
@@ -11,5 +11,7 @@
         GamePhase GetMatchPhase(Guid guid);
         IEnumerable<Player> GetPlayers(Guid guid);
         Player GetCurrentTurn(Guid guid);
+
+        IEnumerable<ValueTuple<Player, Coordinate, Result, ShipName?>> Moves(Guid matchId);
     }
 }

@@ -1,5 +1,4 @@
-﻿
-<div draggable="false" id="@X-@Y" class="game-grid-cell @dropClass"
+﻿<div draggable="false" class="game-grid-cell @dropClass"
      ondragover="event.preventDefault();"
      ondragstart="event.dataTransfer.setData('', event.target.id);"
      @ondrop="HandleDrop"
@@ -9,14 +8,29 @@
     {
         <ShipGamePiece ShipModel="ShipModel" />
     }
+    @if (gameboard.Moves.Any(_ => _.Item1 != currentMatchInfo.Player && _.Item2 == Coordinate))
+    {
+        var result = gameboard.Moves.Single(_ => _.Item1 != currentMatchInfo.Player && _.Item2 == Coordinate);
+
+        if (result.Item3 == Result.Hit)
+        {
+            <i class="bi-alarm"></i>
+        }
+        else
+        {
+            <i class="bi-alarm"></i>
+        }
+
+    }
+
 </div>
 
 @code {
-    [Parameter] public int X { get; set; }
-    [Parameter] public int Y { get; set; }
+    [Parameter] public Coordinate Coordinate { get; set; }
     [Parameter] public IShip? ShipModel { get; set; }
     [Parameter] public EventCallback<Coordinate> OnDropUpdate { get; set; }
     [CascadingParameter] protected Gameboard gameboard { get; set; }
+    [CascadingParameter] protected CurrentMatchInfo currentMatchInfo { get; set; }
 
     private string? dropClass;
 
@@ -26,7 +40,7 @@
 
         if (ShipModel is null || ShipModel == gameboard.CurrentSelected)
         {
-            await OnDropUpdate.InvokeAsync(new Coordinate(X, Y));
+            await OnDropUpdate.InvokeAsync(Coordinate);
         }
 
         dropClass = string.Empty;
@@ -34,13 +48,16 @@
 
     private void HandleDragEnter()
     {
-        if (ShipModel is null || ShipModel == gameboard.CurrentSelected)
+        if (currentMatchInfo.GamePhase == GamePhase.Setup)
         {
-            dropClass = "can-drop";
-        }
-        else
-        {
-            dropClass = "no-drop";
+            if (ShipModel is null || ShipModel == gameboard.CurrentSelected)
+            {
+                dropClass = "can-drop";
+            }
+            else
+            {
+                dropClass = "no-drop";
+            }
         }
     }
 

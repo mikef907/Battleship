@@ -1,16 +1,19 @@
-﻿
-<div draggable="true" title="@ShipModel.Name" class="ship @ShipModel.Name"
+﻿<div draggable="@(currentMatchInfo.GamePhase == GamePhase.Setup ? "true" : "false")" title="@ShipModel.Name" class="ship @ShipModel.Name"
     @ondragstart="() => DragShipStart()">
 </div>
 
 @code {
     [Parameter] public IShip? ShipModel { get; set; }
     [CascadingParameter] protected Gameboard gameboard { get; set; }
+    [CascadingParameter] protected CurrentMatchInfo currentMatchInfo { get; set; }
 
     private void DragShipStart()
     {
-        Console.WriteLine($"{ShipModel} drag start");
-        gameboard.CurrentSelected = ShipModel;
-        Console.WriteLine($"Current Selected {gameboard.CurrentSelected}");
+        if (currentMatchInfo.GamePhase == GamePhase.Setup)
+        {
+            Console.WriteLine($"{ShipModel} drag start");
+            gameboard.CurrentSelected = ShipModel;
+            Console.WriteLine($"Current Selected {gameboard.CurrentSelected}");   
+        }   
     }
 }

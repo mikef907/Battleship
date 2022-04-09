@@ -1,0 +1,21 @@
+﻿<div draggable="false"  @onclick="OnShoot" class="game-grid-cell @resultClass">
+    
+</div>
+
+
+@code {
+    [Parameter] public Result? Result { get; set; }
+    [Parameter] public EventCallback<Coordinate> ShootCallback{ get; set; }
+    [Parameter] public Coordinate Coordinate { get; set; }
+    [CascadingParameter] protected CurrentMatchInfo currentMatchInfo { get; set; }
+    protected string resultClass { get; set; }
+
+    private async Task OnShoot()
+    {
+        if (currentMatchInfo.CurrentTurn == currentMatchInfo.Player && Result is null)
+        {
+            Console.WriteLine("Shooting...");
+            await ShootCallback.InvokeAsync(Coordinate);
+        }
+    }
+}

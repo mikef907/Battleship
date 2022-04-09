@@ -1,14 +1,11 @@
 ﻿@page "/"
-@using Battleship.WASM.Client.Models
-@using Battleship.WASM.Shared
-
 @inject NavigationManager NavigationManager
 @implements IAsyncDisposable
 
 
 <PageTitle>Index</PageTitle>
 <div class="container">
-    <h1>Battleship!</h1>
+    <h1>Battledots!</h1>
     @if (currentMatchInfo.GamePhase.HasValue)
     {
         <h5>Game Phase: @currentMatchInfo.GamePhase</h5>
@@ -41,58 +38,6 @@
     }
 
 </div>
-
-
-<style>
-    .game-grid {
-        display: grid;
-        grid-template-columns: repeat(10, 1fr);
-        grid-auto-rows: 4rem;
-        max-width: 40rem;
-    }
-
-    .ship {
-        height: 100%;
-        width: 100%;
-        border-radius: 30px;
-    }
-
-    .game-grid-cell {
-        border-style: groove;
-        border-width: 1px;
-        height: 100%;
-        width: 100%;
-        z-index: 20;
-    }
-
-    .can-drop {
-        border: 2px dotted green !important;
-    }
-
-    .no-drop {
-        border: 2px dotted red !important;
-    }
-
-    .ship.Carrier {
-        background-color: #ffbe0b;
-    }
-
-    .ship.Battleship {
-        background-color: #fb5607;
-    }
-
-    .ship.Patrol_Boat {
-        background-color: #ff006e;
-    }
-
-    .ship.Submarine {
-        background-color: #8338ec;
-    }
-
-    .ship.Destroyer {
-        background-color: #3a86ff;
-    }
-</style>
 
 @code {
     public CurrentMatchInfo currentMatchInfo = new CurrentMatchInfo();

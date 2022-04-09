@@ -83,14 +83,14 @@ namespace Battleship.Game
             return result;
         }
 
-        public (Result, ShipName?) FireShot(Guid guid, Coordinate coordinate, Player attacker, Player against)
+        public (Result, ShipName?) FireShot(Guid guid, Coordinate coordinate, Player attacker)
         {
             if (CurrentTurn(guid) != attacker)
             {
                 throw new InvalidOperationException("Not attackers turn");
             }
 
-            return _engine.MarkCoordinate(GetMatch(guid), coordinate, attacker, against);
+            return _engine.MarkCoordinate(GetMatch(guid), coordinate, attacker);
         }
 
         private BattleshipMatch GetMatch(Guid guid)
@@ -108,5 +108,8 @@ namespace Battleship.Game
         public IEnumerable<Player> GetPlayers(Guid guid) => GetMatch(guid).Playerboards.Select(_ => _.Key);
 
         public Player GetCurrentTurn(Guid guid) => GetMatch(guid).State.CurrentTurn;
+
+        public IEnumerable<ValueTuple<Player, Coordinate, Result, ShipName?>> Moves(Guid matchId)
+            => GetMatch(matchId).State.Moves;
     }
 }

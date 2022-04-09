@@ -75,7 +75,7 @@
 
             matches.Add(match.Id, match);
 
-            FireShot(match.Id, new Coordinate(0, 0), playerOne, playerTwo).Should().Be((Result.Miss, null));
+            FireShot(match.Id, new Coordinate(0, 0), playerOne).Should().Be((Result.Miss, null));
         }
 
         [Fact]
@@ -84,9 +84,9 @@
             matches[matchId].TransitionGamePhase();
 
             CurrentTurn(matchId).Should().NotBeNull().And.Be(playerOne);
-            FireShot(matchId, new Coordinate(0, 0), playerOne, playerTwo).Should().Be((Result.Miss, null));
+            FireShot(matchId, new Coordinate(0, 0), playerOne).Should().Be((Result.Miss, null));
             CurrentTurn(matchId).Should().NotBeNull().And.Be(playerTwo);
-            FireShot(matchId, new Coordinate(0, 0), playerTwo, playerOne).Should().Be((Result.Miss, null));
+            FireShot(matchId, new Coordinate(0, 0), playerTwo).Should().Be((Result.Miss, null));
             CurrentTurn(matchId).Should().NotBeNull().And.Be(playerOne);
         }
 
@@ -96,8 +96,8 @@
             matches[matchId].TransitionGamePhase();
 
             CurrentTurn(matchId).Should().NotBeNull().And.Be(playerOne);
-            FireShot(matchId, new Coordinate(0, 0), playerOne, playerTwo).Should().Be((Result.Miss, null));
-            Func<(Result, ShipName?)>? act = () => FireShot(matchId, new Coordinate(1, 0), playerOne, playerTwo);
+            FireShot(matchId, new Coordinate(0, 0), playerOne).Should().Be((Result.Miss, null));
+            Func<(Result, ShipName?)>? act = () => FireShot(matchId, new Coordinate(1, 0), playerOne);
             act.Should().Throw<InvalidOperationException>().WithMessage("Not attackers turn");
         }
     }
