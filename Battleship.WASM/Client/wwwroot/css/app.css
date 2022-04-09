@@ -79,19 +79,16 @@ a, .btn-link {
 }
 
 .ship {
-    height: 100%;
-    width: 100%;
     border-radius: 30px;
-    display: flex;
-    justify-content:center;
+    display: grid;
+    justify-content: center;
 }
 
 .game-grid-cell {
     border-style: groove;
     border-width: 1px;
-    height: 100%;
-    width: 100%;
-    z-index: 20;
+    display: grid;
+    justify-content: stretch;
 }
 
 .can-drop {
@@ -124,4 +121,16 @@ a, .btn-link {
 
 div.game-grid.opponent div.game-grid-cell {
     background-color: black
+}
+
+div.game-grid-cell.Hit {
+    background-color: lightgreen !important;
+    font-size: 25px;
+    justify-content: center;
+}
+
+div.game-grid-cell.Miss {
+    background-color: white !important;
+    font-size: 25px;
+    justify-content: center;
 }

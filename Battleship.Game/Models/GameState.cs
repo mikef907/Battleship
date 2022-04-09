@@ -4,11 +4,10 @@
     {
         internal Player CurrentTurn { get; set; }
 
-        internal IEnumerable<ValueTuple<Player, Coordinate, Result, ShipName?>> Moves
-            = Enumerable.Empty<ValueTuple<Player, Coordinate, Result, ShipName?>>();
+        internal IEnumerable<Move> Moves = Enumerable.Empty<Move>();
 
-        internal bool CheckDuplicateMove(Player player, Coordinate coordinate) => Moves.Any(_ => _.Item1 == player && _.Item2 == coordinate);
+        internal bool CheckDuplicateMove(Player player, Coordinate coordinate) => Moves.Any(_ => _.Player == player && _.Coordinate == coordinate);
 
-        internal void AppendMove(ValueTuple<Player, Coordinate, Result, ShipName?> move) => Moves = Moves.Append(move);
+        internal void AppendMove(Move move) => Moves = Moves.Append(move);
     };
 }

@@ -12,6 +12,6 @@
         IEnumerable<Player> GetPlayers(Guid guid);
         Player GetCurrentTurn(Guid guid);
 
-        IEnumerable<ValueTuple<Player, Coordinate, Result, ShipName?>> Moves(Guid matchId);
+        IEnumerable<Move> Moves(Guid matchId);
     }
 }

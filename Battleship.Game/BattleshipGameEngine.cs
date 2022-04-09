@@ -26,7 +26,7 @@ namespace Battleship.Game
 
                 (Result, ShipName?) results = match.Playerboards[against].CheckForHit(coordinate);
 
-                match.State.AppendMove(ValueTuple.Create(attacker, coordinate, results.Item1, results.Item2));
+                match.State.AppendMove(new Move(attacker, coordinate, results.Item1, results.Item2));
 
                 match.State.CurrentTurn = against;
 

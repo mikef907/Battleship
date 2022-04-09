@@ -1,18 +1,29 @@
-﻿<div draggable="false"  @onclick="OnShoot" class="game-grid-cell @resultClass">
-    
+﻿<div draggable="false"  @onclick="OnShoot" class="game-grid-cell @Move?.Result">
+    @if (Move is not null)
+    {
+        @if (Move.Result == Result.Hit)
+        {
+            <i class="bi bi-bullseye"></i>
+        }
+        else
+        {
+            <i class="bi bi-circle"></i>
+        }
+    }
 </div>
 
 
 @code {
-    [Parameter] public Result? Result { get; set; }
     [Parameter] public EventCallback<Coordinate> ShootCallback{ get; set; }
     [Parameter] public Coordinate Coordinate { get; set; }
+    [Parameter] public Move? Move { get; set; }
     [CascadingParameter] protected CurrentMatchInfo currentMatchInfo { get; set; }
+    
     protected string resultClass { get; set; }
 
     private async Task OnShoot()
     {
-        if (currentMatchInfo.CurrentTurn == currentMatchInfo.Player && Result is null)
+        if (currentMatchInfo.CurrentTurn == currentMatchInfo.Player && Move is null)
         {
             Console.WriteLine("Shooting...");
             await ShootCallback.InvokeAsync(Coordinate);

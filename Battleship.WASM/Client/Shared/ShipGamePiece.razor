@@ -1,9 +1,14 @@
 ﻿<div draggable="@(currentMatchInfo.GamePhase == GamePhase.Setup ? "true" : "false")" title="@ShipModel.Name" class="ship @ShipModel.Name"
     @ondragstart="() => DragShipStart()">
+    @if (Move?.Result == Result.Hit)
+    {
+        <i class="bi bi-bullseye" style="font-size: 24px;"></i>   
+    }
 </div>
 
 @code {
     [Parameter] public IShip? ShipModel { get; set; }
+    [Parameter] public Move? Move { get; set; }
     [CascadingParameter] protected Gameboard gameboard { get; set; }
     [CascadingParameter] protected CurrentMatchInfo currentMatchInfo { get; set; }
 

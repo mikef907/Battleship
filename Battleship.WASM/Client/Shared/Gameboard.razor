@@ -1,12 +1,15 @@
-﻿<CascadingValue Value="this">
+﻿@if (currentMatchInfo.GamePhase.HasValue)
+{
+    <h5>Game Phase: @currentMatchInfo.GamePhase</h5>
+}
+
+<CascadingValue Value="this">
     <div draggable="false" class="game-grid">
         @for (var i = 0; i < 10; i++)
         {
             @for (var j = 0; j < 10; j++)
             {
-                <ShipCell Coordinate="new Coordinate(i, j)" ShipModel="playerGrid[i, j]" OnDropUpdate="HandleOnDropUpdate">
-                    
-                </ShipCell>
+                <ShipCell Coordinate="new Coordinate(i, j)" ShipModel="playerGrid[i, j]" OnDropUpdate="HandleOnDropUpdate" Move="GetOppoentMove(i, j)"></ShipCell>
             }
         }
     </div>
@@ -45,11 +48,21 @@
         {
             @for (var j = 0; j < 10; j++)
             {
-                <ResultCell Result="resultGrid[i,j]" Coordinate="new Coordinate(i, j)" ShootCallback="HandleShootCallback" />
+                <ResultCell Coordinate="new Coordinate(i, j)" Move="GetPlayerMove(i, j)" ShootCallback="HandleShootCallback" />
             }
         }
     </div>
+    <div>
+        <p>Move Log</p>
+        <ul>
+            @foreach (var move in Moves)
+            {
+                <li>@move.Player.Username @move.Result at coordinate @move.Coordinate.X, @move.Coordinate.Y</li>
+            }
+        </ul>
+    </div>
 }
+
 
 @code {
     [CascadingParameter] protected CurrentMatchInfo currentMatchInfo { get; set; }
@@ -59,9 +72,12 @@
     private IShip?[,] playerGrid = new IShip?[10, 10];
     private Result?[,] resultGrid = new Result?[10, 10];
     private IDictionary<IShip, Placement?> playerShips;
-    public IEnumerable<ValueTuple<Player, Coordinate, Result, ShipName?>> Moves
-        = Enumerable.Empty<ValueTuple<Player, Coordinate, Result, ShipName?>>();
+    public IEnumerable<Move> Moves = Enumerable.Empty<Move>();
     private bool waitingForPlayer { get; set; } = false;
+
+    protected Move? GetPlayerMove(int x, int y) => Moves.SingleOrDefault(_ => _.Player == currentMatchInfo.Player && _.Coordinate == new Coordinate(x, y));
+
+    protected Move? GetOppoentMove(int x, int y) => Moves.SingleOrDefault(_ => _.Player != currentMatchInfo.Player && _.Coordinate == new Coordinate(x, y));
 
     protected override void OnInitialized()
     {
@@ -75,21 +91,18 @@
 
         HubConnection.On<Player?>("NotifyGameStarted", currentPlayerTurn =>
         {
-            if (currentPlayerTurn is not null)
+            currentMatchInfo.CurrentTurn = currentPlayerTurn;
+
+            if (currentMatchInfo.CurrentTurn is not null)
             {
-                waitingForPlayer = false;
                 currentMatchInfo.GamePhase = GamePhase.Main;
-            }
-            else
-            {
-                waitingForPlayer = true;
+                waitingForPlayer = false;
             }
 
-            currentMatchInfo.CurrentTurn = currentPlayerTurn;
             StateHasChanged();
         });
 
-        HubConnection.On<Player, IEnumerable<ValueTuple<Player, Coordinate, Result, ShipName?>>>("NotifyShotResult", (playerAttacked, moves) =>
+        HubConnection.On<Player, IEnumerable<Move>>("NotifyShotResult", (playerAttacked, moves) =>
         {
             Moves = moves;
             currentMatchInfo.CurrentTurn = playerAttacked;
@@ -143,10 +156,10 @@
     {
         if (HubConnection is not null)
         {
-            currentMatchInfo.GamePhase = GamePhase.Main;
-            StateHasChanged();
             var _playerShips = playerShips.ToDictionary(_ => _.Key.Name, _ => _.Value);
             await HubConnection.SendAsync("StartGame", currentMatchInfo.MatchId, _playerShips);
+            waitingForPlayer = true;
+            StateHasChanged();
         }
     }
 

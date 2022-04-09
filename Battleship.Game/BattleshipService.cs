@@ -109,7 +109,7 @@ namespace Battleship.Game
 
         public Player GetCurrentTurn(Guid guid) => GetMatch(guid).State.CurrentTurn;
 
-        public IEnumerable<ValueTuple<Player, Coordinate, Result, ShipName?>> Moves(Guid matchId)
+        public IEnumerable<Move> Moves(Guid matchId)
             => GetMatch(matchId).State.Moves;
     }
 }

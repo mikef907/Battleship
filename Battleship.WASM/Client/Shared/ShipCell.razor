@@ -6,21 +6,11 @@
      @ondragleave="HandleDragLeave">
     @if (ShipModel is not null)
     {
-        <ShipGamePiece ShipModel="ShipModel" />
+        <ShipGamePiece ShipModel="ShipModel" Move="Move" />
     }
-    @if (gameboard.Moves.Any(_ => _.Item1 != currentMatchInfo.Player && _.Item2 == Coordinate))
+    @if (Move?.Result == Result.Miss)
     {
-        var result = gameboard.Moves.Single(_ => _.Item1 != currentMatchInfo.Player && _.Item2 == Coordinate);
-
-        if (result.Item3 == Result.Hit)
-        {
-            <i class="bi-alarm"></i>
-        }
-        else
-        {
-            <i class="bi-alarm"></i>
-        }
-
+        <i class="bi bi-circle" style="font-size: 24px; text-align: center;"></i>
     }
 
 </div>
@@ -29,6 +19,7 @@
     [Parameter] public Coordinate Coordinate { get; set; }
     [Parameter] public IShip? ShipModel { get; set; }
     [Parameter] public EventCallback<Coordinate> OnDropUpdate { get; set; }
+    [Parameter] public Move? Move { get; set; }
     [CascadingParameter] protected Gameboard gameboard { get; set; }
     [CascadingParameter] protected CurrentMatchInfo currentMatchInfo { get; set; }
 

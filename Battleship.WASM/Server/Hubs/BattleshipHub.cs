@@ -39,9 +39,9 @@ namespace Battleship.WASM.Server.Hubs
             _playerQueue.Players.Enqueue(player);
 #if DEBUG
             // Allows me to test this through a single browser instance
-            Player player2 = BattleshipFactory.CreatePlayer("TESTPLAYER2");
-            _players.Connections.Add(player2, "TESTPLAYER2");
-            _playerQueue.Players.Enqueue(player2);
+            //Player player2 = BattleshipFactory.CreatePlayer("TESTPLAYER2");
+            //_players.Connections.Add(player2, "TESTPLAYER2");
+            //_playerQueue.Players.Enqueue(player2);
 #endif
 
             await Clients.Caller.SendAsync("JoinQueueResponse", player, cancellationTokenSource.Token);
@@ -51,11 +51,11 @@ namespace Battleship.WASM.Server.Hubs
         {
 #if DEBUG
             // Easy setup for both sides, the will mirror eachout
-            Player opponent = _players.Connections.First(_ => _.Key.Username == "TESTPLAYER2").Key;
-            foreach (KeyValuePair<ShipName, Placement> ship in playerShips)
-            {
-                _battleshipService.TryPlaceShip(matchId, new Placement(ship.Value.Coordinate, ship.Value.Direction, opponent), BattleshipFactory.CreateShip(ship.Key)!, out int placed);
-            }
+            //Player opponent = _players.Connections.First(_ => _.Key.Username == "TESTPLAYER2").Key;
+            //foreach (KeyValuePair<ShipName, Placement> ship in playerShips)
+            //{
+            //    _battleshipService.TryPlaceShip(matchId, new Placement(ship.Value.Coordinate, ship.Value.Direction, opponent), BattleshipFactory.CreateShip(ship.Key)!, out int placed);
+            //}
 #endif
 
             foreach (KeyValuePair<ShipName, Placement> ship in playerShips)
@@ -72,8 +72,8 @@ namespace Battleship.WASM.Server.Hubs
 
                             await Clients.Client(connection).SendAsync("NotifyGameStarted", currentTurn);
 
-                            return;
                         }
+                        return;
                     }
                 }
 
