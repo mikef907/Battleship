@@ -64,12 +64,10 @@
         hubConnection.On<Player>("JoinQueueResponse", (player) =>
         {
             currentMatchInfo.Player = player;
-            Console.WriteLine(player);
         });
 
         hubConnection.On<Guid, GamePhase>("NotifyMatchFoundResponse", (matchId, phase) =>
         {
-            Console.WriteLine($"Match found {matchId}");
             currentMatchInfo.MatchId = matchId;
             currentMatchInfo.GamePhase = phase;
             StateHasChanged();

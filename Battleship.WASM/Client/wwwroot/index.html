@@ -21,6 +21,14 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+        window.getCoordinateFromGrid = (x, y) => {
+            const el = document.elementFromPoint(x, y);
+            if (el) {
+                return el.id;
+            }
+        }
+    </script>
 </body>
 
 </html>

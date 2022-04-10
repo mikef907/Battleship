@@ -29,7 +29,6 @@
     {
         if (currentMatchInfo.CurrentTurn == currentMatchInfo.Player && Move is null)
         {
-            Console.WriteLine("Shooting...");
             await ShootCallback.InvokeAsync(Coordinate);
         }
     }

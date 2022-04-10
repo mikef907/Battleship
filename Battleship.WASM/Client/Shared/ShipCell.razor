@@ -1,9 +1,18 @@
-﻿<div draggable="false" class="game-grid-cell @dropClass"
+﻿@inject IJSRuntime JS
+
+<div id="@Coordinate.X-@Coordinate.Y" draggable="false" dropzone="true" class="game-grid-cell @dropClass"
      ondragover="event.preventDefault();"
      ondragstart="event.dataTransfer.setData('', event.target.id);"
      @ondrop="HandleDrop"
      @ondragenter="HandleDragEnter"
-     @ondragleave="HandleDragLeave">
+     @ondragleave="HandleDragLeave"
+     @ontouchmove:preventDefault="true"
+     @ontouchcancel:preventDefault="true"
+     @ontouchcancel:stopPropagation="true"
+     @ontouchmove:stopPropagation="true"
+     @ontouchenter="HandleDragEnter"
+     @ontouchleave="HandleDragLeave"
+     @ontouchend="(TouchEventArgs args) => HandleTouchDrop(args)">
     @if (ShipModel is not null)
     {
         <ShipGamePiece ShipModel="ShipModel" Move="Move" />
@@ -27,11 +36,24 @@
 
     private async void HandleDrop()
     {
-        Console.WriteLine("drop");
-
         if (ShipModel is null || ShipModel == gameboard.CurrentSelected)
         {
             await OnDropUpdate.InvokeAsync(Coordinate);
+        }
+
+        dropClass = string.Empty;
+    }
+
+    private async void HandleTouchDrop(TouchEventArgs args)
+    {
+        var changedTouched = args.ChangedTouches.First();
+
+        var el = await JS.InvokeAsync<string>("getCoordinateFromGrid", changedTouched.ClientX, changedTouched.ClientY);
+
+        if (el is not null)
+        {
+            var chars = el.Split('-');
+            await OnDropUpdate.InvokeAsync(new Coordinate(int.Parse(chars[0]), int.Parse(chars[1])));
         }
 
         dropClass = string.Empty;
@@ -54,7 +76,6 @@
 
     private void HandleDragLeave()
     {
-        Console.WriteLine("Drag leave");
-        dropClass = "";
+        dropClass = string.Empty;
     }
 }

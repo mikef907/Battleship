@@ -42,7 +42,6 @@
         {
             var direction = validDirections.ElementAt(i).Key;
             var placement = new Placement(Coordinate, direction, new Player());
-            Console.WriteLine(placement);
             var coords = BattleshipHelpers.BuildWriteCoordinates(placement, Target);
 
             validDirections[direction] = coords.All(_ => BattleshipHelpers.CheckShipPlacement(_, PlayerGrid, Target));

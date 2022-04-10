@@ -1,5 +1,5 @@
 ﻿<div draggable="@(currentMatchInfo.GamePhase == GamePhase.Setup ? "true" : "false")" title="@ShipModel.Name" class="ship @ShipModel.Name"
-    @ondragstart="() => DragShipStart()">
+    @ondragstart="() => DragShipStart()" @ontouchstart="DragShipStart">
     @if (Move?.Result == Result.Hit)
     {
         <i class="bi bi-bullseye" style="font-size: 24px;"></i>   
@@ -20,9 +20,7 @@
     {
         if (currentMatchInfo.GamePhase == GamePhase.Setup)
         {
-            Console.WriteLine($"{ShipModel} drag start");
             gameboard.CurrentSelected = ShipModel;
-            Console.WriteLine($"Current Selected {gameboard.CurrentSelected}");   
         }   
     }
 }
