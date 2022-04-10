@@ -24,6 +24,6 @@ stages:
       displayName: Build an image
       inputs:
         command: build
-        dockerfile: '$(Build.SourcesDirectory)/Battleship.App/Dockerfile'
+        dockerfile: '$(Build.SourcesDirectory)/Battleship.WASM/Server/Dockerfile'
         tags: |
           $(tag)
