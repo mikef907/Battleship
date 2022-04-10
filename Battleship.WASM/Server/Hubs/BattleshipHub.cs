@@ -100,6 +100,13 @@ namespace Battleship.WASM.Server.Hubs
                 string? connection = _players.Connections[player];
 
                 await Clients.Client(connection).SendAsync("NotifyShotResult", currentTurn, _battleshipService.Moves(matchId));
+
+                Player? winner = _battleshipService.CheckMatchState(matchId);
+
+                if (winner is not null)
+                {
+                    await Clients.Client(connection).SendAsync("NotifyMatchFinished", winner);
+                }
             }
         }
     }

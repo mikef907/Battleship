@@ -134,3 +134,9 @@ div.game-grid-cell.Miss {
     font-size: 25px;
     justify-content: center;
 }
+
+div.game-grid-cell.Sunk {
+    background-color: yellow !important;
+    font-size: 25px;
+    justify-content: center;
+}

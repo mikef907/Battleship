@@ -1,9 +1,13 @@
-﻿<div draggable="false"  @onclick="OnShoot" class="game-grid-cell @Move?.Result">
+﻿<div draggable="false" @onclick="OnShoot" class="game-grid-cell @Move?.Result">
     @if (Move is not null)
     {
         @if (Move.Result == Result.Hit)
         {
             <i class="bi bi-bullseye"></i>
+        }
+        else if (Move.Result == Result.Sunk)
+        {
+            <i class="bi bi-exclamation-circle"></i>
         }
         else
         {
@@ -14,11 +18,11 @@
 
 
 @code {
-    [Parameter] public EventCallback<Coordinate> ShootCallback{ get; set; }
+    [Parameter] public EventCallback<Coordinate> ShootCallback { get; set; }
     [Parameter] public Coordinate Coordinate { get; set; }
     [Parameter] public Move? Move { get; set; }
     [CascadingParameter] protected CurrentMatchInfo currentMatchInfo { get; set; }
-    
+
     protected string resultClass { get; set; }
 
     private async Task OnShoot()
