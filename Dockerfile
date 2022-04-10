@@ -14,10 +14,10 @@ COPY ["Battleship.Game/Battleship.Game.csproj", "Battleship.Game/"]
 RUN dotnet restore "Battleship.WASM/Server/Battleship.WASM.Server.csproj"
 COPY . .
 WORKDIR "/src/Battleship.WASM/Server"
-RUN dotnet build "Battleship.WASM/Server/Battleship.WASM.Server.csproj" -c Release -o /app/build
+RUN dotnet build "Battleship.WASM.Server.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Battleship.WASM/Server/Battleship.WASM.Server.csproj" -c Release -o /app/publish
+RUN dotnet publish "Battleship.WASM.Server.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
