@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Battleship.WASM/Server/Battleship.WASM.Server.csproj", "Battleship.WASM/Server/"]
+COPY ["../../Battleship.WASM/Server/Battleship.WASM.Server.csproj", "Battleship.WASM/Server/"]
 COPY ["Battleship.WASM/Client/Battleship.WASM.Client.csproj", "Battleship.WASM/Client/"]
 COPY ["Battleship.WASM/Shared/Battleship.WASM.Shared.csproj", "Battleship.WASM/Shared/"]
 COPY ["Battleship.Game/Battleship.Game.csproj", "Battleship.Game/"]
