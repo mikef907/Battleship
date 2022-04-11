@@ -11,7 +11,7 @@
         GamePhase GetMatchPhase(Guid guid);
         IEnumerable<Player> GetPlayers(Guid guid);
         Player GetCurrentTurn(Guid guid);
-
         IEnumerable<Move> Moves(Guid matchId);
+        Player? PlayerDiconnectedFromMatch(Player player);
     }
 }

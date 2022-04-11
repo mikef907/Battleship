@@ -1,4 +1,6 @@
-﻿@if (currentMatchInfo.GamePhase.HasValue)
+﻿@inject IJSRuntime JS
+
+@if (currentMatchInfo.GamePhase.HasValue)
 {
     <h5>Game Phase: @currentMatchInfo.GamePhase</h5>
 
@@ -14,6 +16,18 @@
         }
     }
     <button class="btn btn-outline-dark" hidden="@(currentMatchInfo.GamePhase != GamePhase.Completed)" @onclick="Reset">Reset</button>
+    <small class="text-muted" hidden="@(currentMatchInfo.GamePhase != GamePhase.Setup)">Drag and drop your dots to move them around, once you are satisfied with the positioning press the Start Game button</small>
+}
+
+@if (opponentDisconnected)
+{
+    <div class="alert alert-warning d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill" style="font-size:xx-large; margin-right:5px;"></i>
+        <div>
+            Your opponent has disconnected <i class="bi bi-emoji-frown"></i>
+            Please refresh your browser or <a href="#" class="link-primary" @onclick="Reset">click here</a>
+        </div>
+    </div>
 }
 
 
@@ -31,20 +45,22 @@
 
 @if (currentMatchInfo.GamePhase == GamePhase.Setup)
 {
-    <button class="btn btn-outline-primary" @onclick="StartGame">Start Game</button>
-}
+    <button class="btn btn-outline-primary" @onclick="StartGame" disabled="@(waitingForPlayer)">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="@(!waitingForPlayer)"></span>
+        @if (waitingForPlayer)
+        {
+            <span>
+                Waiting...
+            </span>
+        }
+        else
+        {
+            <span>
+                Start Game
+            </span>
+        }
 
-@if (waitingForPlayer)
-{
-    <p>
-        Waiting for opponent...
-
-        <div class="text-center">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    </p>
+    </button>
 }
 
 @if (CurrentSelected is not null)
@@ -52,11 +68,12 @@
     <DirectionPicker OnCloseDirectionPicker="HandleDirectionPickerClose" OnDirectionChoosen="HandleDirectionPicked" PlayerGrid="playerGrid" Coordinate="dropCoordinate.Value" Target="CurrentSelected" />
 }
 
-<hr />
 
 @if (currentMatchInfo.GamePhase == GamePhase.Main && !waitingForPlayer)
 {
+    <hr />
     <p>@(currentMatchInfo.CurrentTurn == currentMatchInfo.Player ? "Your Turn" : "Opponent's Turn")</p>
+    <hr />
     <div draggable="false" class="game-grid opponent">
         @for (var i = 0; i < 10; i++)
         {
@@ -71,29 +88,29 @@
         <ul>
             @foreach (var move in Moves)
             {
-                <li>@move.Player.Username @move.Result at coordinate @move.Coordinate.X, @move.Coordinate.Y</li>
+                <li>@move.Player.Username <span class="badge @(move.Result == Result.Hit ? "bg-warning" : move.Result == Result.Sunk ? "bg-danger" : "bg-secondary")">@move.Result</span> at coordinate @move.Coordinate.X, @move.Coordinate.Y</li>
             }
         </ul>
     </div>
 }
-
 
 @code {
     [CascadingParameter] protected CurrentMatchInfo currentMatchInfo { get; set; }
     [Parameter] public HubConnection HubConnection { get; set; }
     [Parameter] public EventCallback ResetCallback { get; set; }
     public IShip? CurrentSelected { get; set; }
+    public IEnumerable<Move> Moves = Enumerable.Empty<Move>();
     private Coordinate? dropCoordinate { get; set; }
     private IShip?[,] playerGrid = new IShip?[10, 10];
     private Result?[,] resultGrid = new Result?[10, 10];
     private IDictionary<IShip, Placement?> playerShips;
-    public IEnumerable<Move> Moves = Enumerable.Empty<Move>();
     private bool waitingForPlayer { get; set; } = false;
+    private bool opponentDisconnected { get; set; } = false;
     private Player? winner;
 
-    protected Move? GetPlayerMove(int x, int y) => Moves.SingleOrDefault(_ => _.Player == currentMatchInfo.Player && _.Coordinate == new Coordinate(x, y));
+    private Move? GetPlayerMove(int x, int y) => Moves.SingleOrDefault(_ => _.Player == currentMatchInfo.Player && _.Coordinate == new Coordinate(x, y));
 
-    protected Move? GetOppoentMove(int x, int y) => Moves.SingleOrDefault(_ => _.Player != currentMatchInfo.Player && _.Coordinate == new Coordinate(x, y));
+    private Move? GetOppoentMove(int x, int y) => Moves.SingleOrDefault(_ => _.Player != currentMatchInfo.Player && _.Coordinate == new Coordinate(x, y));
 
     protected override void OnInitialized()
     {
@@ -118,6 +135,12 @@
             StateHasChanged();
         });
 
+        HubConnection.On("NotifyOpponentDisconnected", async () =>
+        {
+            opponentDisconnected = true;
+            StateHasChanged();
+        });
+
         HubConnection.On<Player, IEnumerable<Move>>("NotifyShotResult", (playerAttacked, moves) =>
         {
             Moves = moves;
@@ -133,23 +156,23 @@
         });
     }
 
-    public async Task Reset()
+    private async Task Reset()
     {
         await ResetCallback.InvokeAsync();
     }
 
-    public void HandleShootCallback(Coordinate coordinate)
+    private void HandleShootCallback(Coordinate coordinate)
     {
         HubConnection.InvokeAsync("Shoot", currentMatchInfo, coordinate);
     }
 
-    public void HandleDirectionPickerClose()
+    private void HandleDirectionPickerClose()
     {
         dropCoordinate = null;
         CurrentSelected = null;
     }
 
-    public void HandleDirectionPicked(Direction direction)
+    private void HandleDirectionPicked(Direction direction)
     {
         if (CurrentSelected is not null)
         {
@@ -174,7 +197,7 @@
         dropCoordinate = null;
     }
 
-    public void HandleOnDropUpdate(Coordinate coordinate)
+    private void HandleOnDropUpdate(Coordinate coordinate)
     {
         dropCoordinate = coordinate;
     }

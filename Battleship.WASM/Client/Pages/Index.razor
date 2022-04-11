@@ -5,33 +5,36 @@
 
 
 <PageTitle>Index</PageTitle>
-<div class="container">
+<div class="container" style="width:410px;">
     <h1>Battledots!</h1>
     <small>v. @version.ToString()</small>
 
     @if (!currentMatchInfo.MatchId.HasValue)
     {
-        <div>
-            <input @bind="username" placeholder="Username" /><button @onclick="JoinQueue" disabled="@(!IsConnected || isQueued)">Join Queue</button>
-            @if (isQueued)
-            {
-                <p>
-                    Queue joined...waiting for match
-
-                    <div class="text-center">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                </p>
-            }
-
+        <div class="input-group">
+            <input class="form-control" @bind="username" placeholder="Username" />
+            <button class="btn btn-outline-primary" @onclick="JoinQueue" type="button" disabled="@(!IsConnected || isQueued)">
+                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" hidden="@(!isQueued)"></span>
+                @if (isQueued)
+                {
+                    <span>
+                        Queued ...
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        Join Queue
+                    </span>
+                }
+            </button>
+            <p class="text-danger" hidden="@(showError == false)">Username in use, please try a different username</p>
         </div>
     }
     else
     {
         <CascadingValue Value="@currentMatchInfo">
-            <Gameboard HubConnection="hubConnection" ResetCallback="HandleReset"/>
+            <Gameboard HubConnection="hubConnection" ResetCallback="HandleReset" />
         </CascadingValue>
     }
 
@@ -44,6 +47,7 @@
     private List<string> messages = new List<string>();
 
     private bool isQueued = false;
+    private bool showError = false;
 
     private string? userInput;
     private string? messageInput;
@@ -66,10 +70,20 @@
             StateHasChanged();
         });
 
-        hubConnection.On<Player>("JoinQueueResponse", (player) =>
+        hubConnection.On<Player?>("JoinQueueResponse", (player) =>
         {
-            currentMatchInfo.Player = player;
+            if (!player.HasValue)
+            {
+                showError = true;
+                isQueued = false;
+            }
+            else
+            {
+                currentMatchInfo.Player = player.Value;
+            }
+            StateHasChanged();
         });
+
 
         hubConnection.On<Guid, GamePhase>("NotifyMatchFoundResponse", (matchId, phase) =>
         {
@@ -101,6 +115,7 @@
         if (hubConnection is not null)
         {
             isQueued = true;
+            showError = false;
             StateHasChanged();
             await hubConnection.SendAsync("JoinQueue", username);
         }

@@ -111,5 +111,18 @@ namespace Battleship.Game
 
         public IEnumerable<Move> Moves(Guid matchId)
             => GetMatch(matchId).State.Moves;
+        public Player? PlayerDiconnectedFromMatch(Player player)
+        {
+            KeyValuePair<Guid, BattleshipMatch> match = matches.FirstOrDefault(_ => _.Value.GamePhase != GamePhase.Completed && _.Value.Playerboards.ContainsKey(player));
+
+            if (match.Key != Guid.Empty)
+            {
+                Player _player = match.Value.Playerboards.FirstOrDefault(_ => _.Key != player).Key;
+                matches.Remove(match.Key);
+                return _player;
+            }
+
+            return null;
+        }
     }
 }

@@ -17,12 +17,42 @@ namespace Battleship.WASM.Server.Hubs
             _battleshipService = battleshipService;
         }
 
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            string? connectionId = Context.ConnectionId;
+
+
+            if (_players.Connections.Any(_ => _.Value == connectionId))
+            {
+                KeyValuePair<Player, string> connection = _players.Connections.Single(_ => _.Value == connectionId);
+
+                Player? opponent = _battleshipService.PlayerDiconnectedFromMatch(connection.Key);
+
+                if (opponent is not null)
+                {
+                    KeyValuePair<Player, string> opponentConnection = _players.Connections.Single(_ => _.Key == opponent);
+
+                    await Clients.Client(opponentConnection.Value).SendAsync("NotifyOpponentDisconnected");
+                }
+
+                if (_playerQueue.Players.Contains(connection.Key))
+                {
+                    _playerQueue.Remove(connection.Key);
+                }
+
+                _players.Connections.Remove(connection.Key);
+            }
+
+            await base.OnDisconnectedAsync(exception);
+        }
+
         public async Task JoinQueue(string username)
         {
             Player player;
 
             if (_playerQueue.Players.Any(_ => _.Username == username))
             {
+                await Clients.Caller.SendAsync("JoinQueueResponse", null, cancellationTokenSource.Token);
                 return;
             }
 
